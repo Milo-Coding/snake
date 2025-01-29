@@ -17,17 +17,17 @@ Snake has a simple structure, clear syntax and very readable keywords. It is mea
 
 ## Examples
 
-```
-=   ->  is
-==  ->  =?
-<   ->  <?
->   ->  <?
-<=  ->  <=?
->=  ->  >=?
-```
+| Symbol | Snake Equivalent |
+|--------|------------------|
+| =      | is               |
+| ==     | =?               |
+| <      | <?               |
+| >      | >?               |
+| <=     | <=?              |
+| >=     | >=?              |
 
-| Function       | Python                          | JavaScript                                 | Third Language |
-|----------------|---------------------------------|--------------------------------            |----------------|
-| Print          | `print("Hello world!")`         | `console.log("Hello world!")`              |                |
-| Function Def   | `def add(a, b): return a + b`   | `function add(a, b) { return a + b; }`     |                |
-| If Statement   | `if x > 0: print("Positive")`   | `if (x > 0) { console.log("Positive"); }`  |                |
+| Function       | JavaScript                                 | Python                          | Snake          |
+|----------------|--------------------------------------------|---------------------------------|----------------|
+| Print          | `console.log("Hello world!")`              | `print("Hello world!")`         |                |
+| Function Def   | `function add(a, b) { return a + b; }`     | `def add(a, b): return a + b`   |                |
+| If Statement   | `if (x > 0) { console.log("Positive"); }`  | `if x > 0: print("Positive")`   |                |
