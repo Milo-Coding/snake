@@ -8,7 +8,7 @@
     "test": "node --test test/**/*.test.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Milo Fritzen",
   "license": "MIT",
   "dependencies": {
     "ohm-js": "^17.1.0"
