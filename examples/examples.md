@@ -22,7 +22,7 @@
 
 | JavaScript                                                                          | Python                                                                 | snake                                                                                    |
 | ----------------------------------------------------------------------------------- | ---------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| `let list = [1, 2, 3];`<br>`let dict = {a: 1, b: 2};`<br>`console.log(list, dict);` | `list = [1, 2, 3]`<br>`dict = {'a': 1, 'b': 2}`<br>`print(list, dict)` | `list is [1, 2, 3]`<br>`name_value_pair dict is {'a': 1, 'b': 2}`<br>`print(list, dict)` |
+| `let my_list = [1, 2, 3];`<br>`let dict = {a: 1, b: 2};`<br>`console.log(list, dict);` | `my_list = [1, 2, 3]`<br>`dict = {'a': 1, 'b': 2}`<br>`print(list, dict)` | `list my_list is [1, 2, 3]`<br>`name_value_pair dict is {'a': 1, 'b': 2}`<br>`print(list, dict)` |
 
 ### Input
 
