@@ -4,7 +4,7 @@
 
 | JavaScript                                                          | Python                                           | snake                                             |
 | ------------------------------------------------------------------- | ------------------------------------------------ | ------------------------------------------------- |
-| `function greet() {`<br>`  console.log("Hi");`<br>`}`<br>`greet();` | `def greet():`<br>`  print("Hi")`<br>`greet() {` | `reusable_code greet()`<br>`  print("Hi")`<br>`}` |
+| `function greet() {`<br>`  console.log("Hi");`<br>`}`<br>`greet();` | `def greet():`<br>`  print("Hi")`<br>`greet()` | `reusable_code greet() {}`<br>`  print("Hi")`<br>`}`<br>`reusable_code()` |
 
 ### Nested Loops
 

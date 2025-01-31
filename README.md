@@ -98,9 +98,9 @@ Reading input from a user gives snake a dynamic element and allows for more inte
 
 ### Function Definition and Call
 
-| JavaScript                                                          | Python                                           | snake                                             |
-| ------------------------------------------------------------------- | ------------------------------------------------ | ------------------------------------------------- |
-| `function greet() {`<br>`  console.log("Hi");`<br>`}`<br>`greet();` | `def greet():`<br>`  print("Hi")`<br>`greet() {` | `reusable_code greet()`<br>`  print("Hi")`<br>`}` |
+| JavaScript                                                          | Python                                         | snake                                                                     |
+| ------------------------------------------------------------------- | ---------------------------------------------- | ------------------------------------------------------------------------- |
+| `function greet() {`<br>`  console.log("Hi");`<br>`}`<br>`greet();` | `def greet():`<br>`  print("Hi")`<br>`greet()` | `reusable_code greet() {}`<br>`  print("Hi")`<br>`}`<br>`reusable_code()` |
 
 ### Nested Loops
 
