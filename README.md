@@ -38,7 +38,7 @@ Reading input from a user gives snake a dynamic element and allows for more inte
 
 | JavaScript | Python | snake           |
 | ---------- | ------ | --------------- |
-| string     | str    | letters         |
+| string     | str    | text            |
 | integer    | int    | number          |
 | float      | float  | number          |
 | boolean    | bool   | truth_value     |
@@ -85,7 +85,7 @@ Reading input from a user gives snake a dynamic element and allows for more inte
 
 ## Symbols
 
-| Python | Snake |
+| Python | snake |
 | ------ | ----- |
 | =      | is    |
 | ==     | =?    |
@@ -116,8 +116,8 @@ Reading input from a user gives snake a dynamic element and allows for more inte
 
 ### Lists and Dictionaries
 
-| JavaScript                                                                          | Python                                                                 | snake                                                                                    |
-| ----------------------------------------------------------------------------------- | ---------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| JavaScript                                                                             | Python                                                                    | snake                                                                                            |
+| -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
 | `let my_list = [1, 2, 3];`<br>`let dict = {a: 1, b: 2};`<br>`console.log(list, dict);` | `my_list = [1, 2, 3]`<br>`dict = {'a': 1, 'b': 2}`<br>`print(list, dict)` | `list my_list is [1, 2, 3]`<br>`name_value_pair dict is {'a': 1, 'b': 2}`<br>`print(list, dict)` |
 
 ### Input
