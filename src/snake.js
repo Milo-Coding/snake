@@ -1,18 +1,20 @@
-import * as fs from 'fs';
-import * as ohm from 'ohm-js';
-
-console.log('Hello World!');
+import * as fs from "fs";
+import * as ohm from "ohm-js";
+import parse from "./parser.js";
+import interpret from "./interpreter.js";
 
 // read the contents of the file snake.ohm into a string
-const grammar = ohm.grammar(fs.readFileSync('src/snake.ohm', 'utf8'));
+const grammar = ohm.grammar(fs.readFileSync("src/snake.ohm", "utf8"));
 
-const sourceCode = process.argv[2];
-const match = grammar.match(sourceCode);
+if (process.argv.length !== 3) {
+  console.error("Usage: node src/snake.js <source>");
+  process.exit(1);
+}
 
-if (match.succeeded()) {
-  console.log('The source code is syntactically correct!');
+try {
+  const match = parse(process.argv[2]);
   interpret(match);
-} else {
-  console.error('The source code is syntactically incorrect!');
-  console.error(match.message);
+} catch (error) {
+  console.error(error.message);
+  process.exit(1);
 }
