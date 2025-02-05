@@ -4,6 +4,13 @@
 
 Snake is a python-like language with easily readable code so even non-computer scientists can identify what code does. When thinking about the scope of language I wanted to build, I decided that I wanted my language to be capeable of all the topics covered in a 1010 programming course.
 
+## Running snake code
+
+To run the interpreter 
+```
+node src/snake.js <file to read>
+```
+
 ## Features
 
 #### Easy to code
