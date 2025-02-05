@@ -27,6 +27,49 @@ export default function interpret(match) {
       }
       return memory.get(name);
     },
+    Exp_binary(left, op, right) {
+      switch (op.sourceString) {
+        case "==":
+          return left.eval() === right.eval();
+        case "!=":
+          return left.eval() !== right.eval();
+        case "<":
+          return left.eval() < right.eval();
+        case "<=":
+          return left.eval() <= right.eval();
+        case ">":
+          return left.eval() > right.eval();
+        case ">=":
+          return left.eval() >= right.eval();
+      }
+    },
+    Condition_binary(left, op, right) {
+      switch (op.sourceString) {
+        case "+":
+          return left.eval() + right.eval();
+        case "-":
+          return left.eval() - right.eval();
+      }
+    },
+    Term_binary(left, op, right) {
+      switch (op.sourceString) {
+        case "*":
+          return left.eval() * right.eval();
+        case "/":
+          return left.eval() / right.eval();
+        case "%":
+          return left.eval() % right.eval();
+      }
+    },
+    Factor_negation(_op, operand) {
+      return 0 - operand.eval();
+    },
+    Factor_binary(left, op, right) {
+      return Math.pow(left.eval(), right.eval());
+    },
+    Primary_parens(_open, exp, _close) {
+      return exp.eval();
+    },
   });
 
   throw interpreter(match).eval();
