@@ -5,7 +5,7 @@
   "type": "module",
   "main": "src/snake.js",
   "scripts": {
-    "test": "node --test test/**/*.test.js"
+    "test": "c8 node --test test/**/*.test.js"
   },
   "keywords": [],
   "author": "Milo Fritzen",
