@@ -4,6 +4,11 @@ export default function translate(match) {
   const grammar = match.matcher.grammar;
 
   const locals = new Map();
+  const target = [];
+
+  function emit(line) {
+    target.push(line);
+  }
 
   function check(condition, message, parseTreeNode) {
     if (!condition) {
@@ -18,25 +23,25 @@ export default function translate(match) {
       }
     },
     Statement_while(_while, _open, condition, _close, statement) {
-      console.log("while (", condition.translate(), ") {");
+      emit("while (", condition.translate(), ") {");
       statement.translate();
-      console.log("}");
+      emit("}");
     },
     // BStatment_break(_break, _semi) {
-    //   console.log("break;");
+    //   emit("break;");
     // },
     // VarDecl(_type, id, _eq, exp, _semi) {
     //   check(!locals.has(id.sourceString), `Variable ${id.sourceString} already declared`, id);
     //   const initializer = exp.translate();
     //   locals.set(id.sourceString, "number");
-    //   console.log(`let ${id.sourceString} = ${initializer};`);
+    //   emit(`let ${id.sourceString} = ${initializer};`);
     // },
     Statement_assign(id, _eq, exp, _semi) {
       const initializer = exp.translate();
-      console.log(id.sourceString, "=", initializer);
+      emit(id.sourceString, "=", initializer);
     },
     Statement_print(_print, exp, _semi) {
-      console.log(`console.log(${exp.translate()});`);
+      emit(`console.log(${exp.translate()});`);
     },
     number(_digits, _period, _decimals, _e, _unary, _exponent) {
       return Number(this.sourceString);
@@ -87,5 +92,6 @@ export default function translate(match) {
     },
   });
 
-  throw translator(match).translate();
+  translator(match).translate();
+  return target;
 }
