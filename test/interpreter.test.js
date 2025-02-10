@@ -9,5 +9,7 @@ describe("Interpreter", () => {
   });
   it("throws on syntax erorrs", () => {
     throws(() => parse("1d;1fsgref"), /Expected/);
+    throws(() => parse("print -(dog ** 2) == ;"), /Expected/);
+    throws(() => parse(">"), /Expected/);
   });
 });
