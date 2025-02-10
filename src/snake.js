@@ -9,7 +9,7 @@ if (process.argv.length !== 3) {
 }
 
 try {
-  const source = FsReadStream.readFileSync(process.argv[2], "utf8");
+  const source = fs.readFileSync(process.argv[2], "utf8");
   const match = parse(source);
   interpret(match);
 } catch (error) {
