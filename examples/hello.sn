@@ -1,2 +1,2 @@
-print 2.1e2;
-dog = 21 * 2 + 8;
+print 2.1e2
+number dog = 21 * 2 + 8
