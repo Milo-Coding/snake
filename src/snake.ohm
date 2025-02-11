@@ -1,54 +1,87 @@
-Snake {
-    Program         = Statement+
-    Statement       = id "=" Exp ";"                    --assign
-                    | print Exp ";"                     --print
-                    | while Exp "{" BStatement* "}"     --while
-                    | if Exp "{" Statement* "}" (elseIf Exp "{" Statement* "}")* (else "{" Statement* "}")?  --if
-                    | Exp                               --call
+snake {
+  Program     =  Stmt+
+  Stmt        =  newline			     	-- emptyLine
+              |  Dec newline                -- declaration
+              |  Assignment newline         -- assignment
+              |  Call newline               -- call
+              |  break newline              -- break
+              |  return Exp? newline        -- return
+              |  print Args newline         -- print
+              |  if Exp Block (else if Exp Block)* (else Block)?  -- if
+              |  while Exp Block            -- while
+  
+  Assignment  =  Var "=" Exp                -- plain
+  Dec         =  VarDec | FunDec
 
-    BStatement      = id "=" Exp ";"                    --assign
-                    | print Exp ";"                     --print
-                    | break ";"                         --break
-                    | while Exp "{" BStatement* "}"     --while
-                    | if Exp "{" BStatement* "}" (elseIf Exp "{" BStatement* "}")* (else "{" BStatement* "}")? --if
-                    | Exp                               --call
-
-    Exp             = Condition binaryOp Condition      --binary
-                    | Condition
-
-    Condition       = Condition addOp Term              --binary
-                    | Term
-
-    Term            = Term mulOp Factor                 --binary
-                    | Factor
-
-    Factor          = Primary "**" Factor               --binary
-                    | "-" Primary                       --negation
-                    | Primary
-
-    Primary         = id
-                    | number
-                    | "(" Exp ")"                       --parens
+  Type        =  Type "[" "]"               -- list
+              |  primtype
+              |  id
               
-    keyword         = print | if | elseIf | else | while | break
-    print           = "print" ~idchar
-    if              = "if" ~idchar
-    elseIf          = "elseIf" ~idchar
-    else            = "else" ~idchar
-    while           = "while" ~idchar
-    break           = "break" ~idchar
+  VarDec      =  Type id ("=" Exp)? newline
+  FunDec      =  function id "(" Params ")" "outputs" (void | Type) Block
+  Params      =  (Type id ("," Type id)*)?
+  Block       =  "{" Stmt* "}"
+  
+  Exp         =  NonemptyListOf<Exp1, "or"> 
+  Exp1        =  NonemptyListOf<Exp2, "and">
+  Exp2        =  NonemptyListOf<Exp3, "^">
+  Exp3        =  Exp4 (relop Exp4)?
+  Exp4        =  NonemptyListOf<Exp5, addop>
+  Exp5        =  NonemptyListOf<Exp6, mulop>
+  Exp6        =  Literal
+              |  Var
+              |  NewObject
+              |  NewList
+              |  EmptyList
+              |  "(" Exp ")"                -- parens
+  Literal     =  null
+              |  true
+              |  false
+              |  numberlit
+              |  stringlit
+  Var         =  Var "[" Exp "]"            -- subscript
+              |  Var "." id                 -- select
+              |  Call
+              |  id
+  NewObject   =  new id "{" Args "}"
+  NewList     =  new Type_list "{" Args "}"
+  EmptyList   =  new Type "[" Exp "]"
+  Call        =  id "(" Args ")"
+  Args        =  ListOf<Exp, ",">
 
-    idchar          = letter | digit | "_"
+  boolean     = "truth_value" ~idchar
+  break       = "stop_loop" ~idchar
+  else        = "else" ~idchar
+  false       = "false" ~idchar
+  for         = "for" ~idchar
+  if          = "if" ~idchar
+  number      = "number" ~idchar
+  new         = "new" ~idchar
+  null        = "no_value" ~idchar
+  print       = "print" ~idchar
+  return      = "return" ~idchar
+  string      = "text" ~idchar
+  true        = "true" ~idchar
+  void        = "void" ~idchar
+  while       = "loop_while" ~idchar
+  function    = "reusable_code" ~idchar
 
-    id              = ~keyword letter idchar*
+  keyword     =  boolean | if | break | else | number | for | new
+              |  return | null | while | true | string | function
+              | void | false | print
+              
+  id          =  ~keyword letter idchar*
+  idchar      =  "_" | alnum
+  numberlit    =  digit+ "."? digit* (("E"|"e") ("+"|"-")? digit+)?
+  stringlit   =  ~keyword letter idchar*
+  
+  addop       =  "+" | "-"
+  relop       =  "<=?" | "<?" | "=?" | "!=?" | ">=?" | ">?"
+  mulop       =  "*" | "/" | "modulus"
+  primtype    =  boolean | string | number
+  
+  newline     =  "\n" | "\r\n"
 
-    number          = digit+ ("." digit+)? (("E" | "e") ("+" | "-")? digit+)?
-
-    space           += comment
-    comment         = "//" (~"\n" any)*                 --single
-                    | "/*" (~"*/" any)* "*/"            --multi
-
-    binaryOp        = "==" | "!=" | "<=" | "<" | ">=" | ">"
-    addOp           = "+" | "-"
-    mulOp           = "*" | "/" | "%"
+  space      :=  " " | "\t" | comment
+  comment     =  "//" (~"\n" any)*
 }
