@@ -17,7 +17,7 @@ snake {
               |  primtype
               |  id
               
-  VarDec      =  Type id ("=" Exp)? newline
+  VarDec      =  Type id ("=" Exp)?
   FunDec      =  function id "(" Params ")" "outputs" (void | Type) Block
   Params      =  (Type id ("," Type id)*)?
   Block       =  "{" Stmt* "}"
