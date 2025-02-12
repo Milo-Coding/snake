@@ -72,7 +72,7 @@ snake {
               
   id          =  ~keyword letter idchar*
   idchar      =  "_" | alnum
-  numberlit    =  digit+ "."? digit* (("E"|"e") ("+"|"-")? digit+)?
+  numberlit   =  digit+ "."? digit* (("E"|"e") ("+"|"-")? digit+)?
   stringlit   =  ~keyword letter idchar*
   
   addop       =  "+" | "-"
