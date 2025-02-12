@@ -60,12 +60,12 @@ export default function translate(match) {
     Exp3(left, op, right) {
       const targetOp =
         {
-          "=?": " === ",
-          "!=?": " !== ",
-          "<?": " < ",
-          "<=?": " <= ",
-          ">?": " > ",
-          ">=?": " >= ",
+          "=?": "===",
+          "!=?": "!==",
+          "<?": "<",
+          "<=?": "<=",
+          ">?": ">",
+          ">=?": ">=",
         }?.[op.sourceString] || op.sourceString;
       return `${left.translate()}${targetOp}${right.translate()}`;
     },
