@@ -12,7 +12,9 @@ export default function translate(match) {
 
   function check(condition, message, parseTreeNode) {
     if (!condition) {
-      throw new Error(`${parseTreeNode.source.getLineAndColumnMessage()} ${message}`);
+      throw new Error(
+        `${parseTreeNode.source.getLineAndColumnMessage()} ${message}`
+      );
     }
   }
 
@@ -22,65 +24,78 @@ export default function translate(match) {
         statement.translate();
       }
     },
-    // Statement_while(_while, _open, condition, _close, statement) {
-    //   emit("while (", condition.translate(), ") {");
-    //   statement.translate();
-    //   emit("}");
-    // },
-    // Statement_assign(id, _eq, exp, _semi) {
-    //   const initializer = exp.translate();
-    //   emit(id.sourceString, "=", initializer);
-    // },
-    // Statement_print(_print, exp, _semi) {
-    //   emit(`console.log(${exp.translate()});`);
-    // },
-    // number(_digits, _period, _decimals, _e, _unary, _exponent) {
-    //   return Number(this.sourceString);
-    // },
-    // id(_first, _rest) {
-    //   const name = this.sourceString;
-    //   check(locals.has(name), `Undefined variable ${name}`, this);
-    //   return name;
-    // },
-    // Exp_binary(left, op, right) {
-    //   const targetOp =
-    //     {
-    //       "==": "===",
-    //       "!=": "!==",
-    //       "<": "<",
-    //       "<=": "<=",
-    //       ">": ">",
-    //       ">=": ">=",
-    //     }?.[op.sourceString] || op.sourceString;
-    //   return `${left.translate()} ${targetOp} ${right.translate()}`;
-    // },
-    // Condition_binary(left, op, right) {
-    //   switch (op.sourceString) {
-    //     case "+":
-    //       return `${left.translate()} + ${right.translate()}`;
-    //     case "-":
-    //       return `${left.translate()} - ${right.translate()}`;
-    //   }
-    // },
-    // Term_binary(left, op, right) {
-    //   switch (op.sourceString) {
-    //     case "*":
-    //       return `${left.translate()} * ${right.translate()}`;
-    //     case "/":
-    //       return `${left.translate()} / ${right.translate()}`;
-    //     case "%":
-    //       return `${left.translate()} % ${right.translate()}`;
-    //   }
-    // },
-    // Factor_negation(_op, operand) {
-    //   return `-${operand.translate()}`;
-    // },
-    // Factor_binary(left, op, right) {
-    //   return `${left.translate()} ** ${right.translate()}`;
-    // },
-    // Primary_parens(_open, exp, _close) {
-    //   return `(${exp.translate()})`;
-    // },
+    Stmt_print(_print, args, _newline) {
+      emit(`console.log(${args.translate()});`);
+    },
+    Stmt_declaration(_dec, _newline) {},
+    VarDec(type, id, _eq, exp) {
+      const initializer = exp?.translate();
+      locals.set(id.sourceString, type.sourceString);
+      emit(`let ${id.sourceString} = ${initializer};`);
+    },
+    Args(args) {
+      return args
+        .asIteration()
+        .children.map((arg) => arg.translate())
+        .join(", ");
+    },
+    Exp(args) {
+      return args
+        .asIteration()
+        .children.map((arg) => arg.translate())
+        .join(" || ");
+    },
+    Exp1(args) {
+      return args
+        .asIteration()
+        .children.map((arg) => arg.translate())
+        .join(" && ");
+    },
+    Exp2(args) {
+      return args
+        .asIteration()
+        .children.map((arg) => arg.translate())
+        .join(" ** ");
+    },
+    Exp3(left, op, right) {
+      const targetOp =
+        {
+          "=?": " === ",
+          "!=?": " !== ",
+          "<?": " < ",
+          "<=?": " <= ",
+          ">?": " > ",
+          ">=?": " >= ",
+        }?.[op.sourceString] || op.sourceString;
+      return `${left.translate()}${targetOp}${right.translate()}`;
+    },
+    Exp4(args) {
+      return args
+        .asIteration()
+        .children.map((arg) => arg.translate())
+        .join(" + ");
+    },
+    Exp5(args) {
+      return args
+        .asIteration()
+        .children.map((arg) => arg.translate())
+        .join(" * ");
+    },
+    Exp6_parens(_open, exp, _close) {
+      return `(${exp.translate()})`;
+    },
+    Exp6(args) {
+      return args.translate();
+    },
+    numberlit(_digits, _period, _decimals, _e, _unary, _exponent) {
+      return Number(this.sourceString);
+    },
+    stringlit(_letter, _chars) {
+      return `${this.sourceString}`;
+    },
+    _iter(...children) {
+      return children.map((child) => child.translate());
+    },
   });
 
   translator(match).translate();
