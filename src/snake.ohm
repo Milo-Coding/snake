@@ -10,14 +10,14 @@ snake {
               |  if Exp Block (else if Exp Block)* (else Block)?  -- if
               |  while Exp Block            -- while
   
-  Assignment  =  Var "=" Exp                -- plain
+  Assignment  =  Var "is" Exp
   Dec         =  VarDec | FunDec
 
   Type        =  Type "[" "]"               -- list
               |  primtype
               |  id
               
-  VarDec      =  Type id ("=" Exp)?
+  VarDec      =  Type id ("is" Exp)?
   FunDec      =  function id "(" Params ")" "outputs" (void | Type) Block
   Params      =  (Type id ("," Type id)*)?
   Block       =  "{" Stmt* "}"
@@ -25,12 +25,12 @@ snake {
   Exp         =  NonemptyListOf<Exp1, "or"> 
   Exp1        =  NonemptyListOf<Exp2, "and">
   Exp2        =  NonemptyListOf<Exp3, "^">
-  Exp3        =  Exp4 (relop Exp4)?
+  Exp3        =  Exp4 relop Exp4            -- binary
+              |  Exp4
   Exp4        =  NonemptyListOf<Exp5, addop>
   Exp5        =  NonemptyListOf<Exp6, mulop>
   Exp6        =  Literal
               |  Var
-              |  NewObject
               |  NewList
               |  EmptyList
               |  "(" Exp ")"                -- parens
@@ -43,7 +43,7 @@ snake {
               |  Var "." id                 -- select
               |  Call
               |  id
-  NewObject   =  new id "{" Args "}"
+
   NewList     =  new Type_list "{" Args "}"
   EmptyList   =  new Type "[" Exp "]"
   Call        =  id "(" Args ")"
