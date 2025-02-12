@@ -1,5 +1,6 @@
-x = 5
+number x is 5
 
-loop_while 5 >? 0 {
+loop_while x >? 0 {
     print x
+    x is x - 1
 } 
