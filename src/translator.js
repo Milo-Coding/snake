@@ -84,17 +84,16 @@ export default function translate(match) {
         }[op.sourceString] || op.sourceString;
       return `${left.translate()} ${targetOp} ${right.translate()}`;
     },
-    Exp4(args) {
-      return args
-        .asIteration()
-        .children.map((arg) => arg.translate())
-        .join(" + ");
+    Exp4_binary(left, op, right) {
+      const targetOp =
+        { "+": "+", "-": "-" }[op.sourceString] || op.sourceString;
+      return `${left.translate()} ${targetOp} ${right.translate()}`;
     },
-    Exp5(args) {
-      return args
-        .asIteration()
-        .children.map((arg) => arg.translate())
-        .join(" * ");
+    Exp5_binary(left, op, right) {
+      const targetOp =
+        { "*": "*", "/": "/", modulus: "%" }[op.sourceString] ||
+        op.sourceString;
+      return `${left.translate()} ${targetOp} ${right.translate()}`;
     },
     Exp6_parens(_open, exp, _close) {
       return `(${exp.translate()})`;

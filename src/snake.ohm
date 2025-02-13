@@ -27,8 +27,10 @@ snake {
   Exp2        =  NonemptyListOf<Exp3, "^">
   Exp3        =  Exp4 relop Exp4            -- binary
               |  Exp4
-  Exp4        =  NonemptyListOf<Exp5, addop>
-  Exp5        =  NonemptyListOf<Exp6, mulop>
+  Exp4        =  Exp4 addop Exp5            -- binary
+              |  Exp5
+  Exp5        =  Exp5 mulop Exp6            -- binary
+              |  Exp6
   Exp6        =  Literal
               |  Var
               |  NewList
