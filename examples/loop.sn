@@ -1,6 +1,6 @@
 number x is 5
 
 loop_while x >? 0 {
-    print x
+    print x modulus 2
     x is x - 1
 } 
