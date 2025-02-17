@@ -1,6 +1,7 @@
 // snake compiler
-import parse from "./parser.js";
 import * as fs from "fs";
+import parse from "./parser.js";
+import analyze from "./analizer.js";
 import translate from "./translator.js";
 
 if (process.argv.length !== 3) {
@@ -11,7 +12,8 @@ if (process.argv.length !== 3) {
 try {
   const source = fs.readFileSync(process.argv[2], "utf8");
   const match = parse(source);
-  const target = translate(match);
+  const program = analyze(match);
+  const target = translate(program);
   console.log(target.join("\n"));
 } catch (error) {
   console.error(`${error}`);
