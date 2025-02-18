@@ -1,4 +1,4 @@
-import { declaration, variable, increment } from "./core";
+import { declaration } from "./core.js";
 
 export default function analyze(match) {
   const grammar = match.matcher.grammar;
