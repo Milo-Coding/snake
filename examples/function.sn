@@ -1,0 +1,7 @@
+reusable_code hello(text name, number times) outputs text {
+    number i is times
+    loop_while i >? 0 {
+        print "hello", name
+        i is i - 1
+    }
+}
