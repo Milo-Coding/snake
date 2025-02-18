@@ -13,13 +13,13 @@ snake {
   Assignment  =  Var "is" Exp
   Dec         =  VarDec | FunDec
 
-  Type        =  Type "[" "]"               -- list
-              |  primtype
-              |  id
+  Type        =  boolean | string | number
               
   VarDec      =  Type id ("is" Exp)?
   FunDec      =  function id "(" Params ")" "outputs" (void | Type) Block
-  Params      =  (Type id ("," Type id)*)?
+  Params      =  Type id "," Params         -- multiple
+              |  Type id                    -- single
+              |                             -- none
   Block       =  "{" Stmt* "}"
   
   Exp         =  NonemptyListOf<Exp1, "or"> 
@@ -28,6 +28,7 @@ snake {
   Exp3        =  Exp4 relop Exp4            -- binary
               |  Exp4
   Exp4        =  Exp4 addop Exp5            -- binary
+              |  "-" Exp5                   -- unary
               |  Exp5
   Exp5        =  Exp5 mulop Exp6            -- binary
               |  Exp6
@@ -42,12 +43,12 @@ snake {
               |  numberlit
               |  stringlit
   Var         =  Var "[" Exp "]"            -- subscript
-              |  Var "." id                 -- select
+              |  Var "." id                 -- property
               |  Call
               |  id
 
-  NewList     =  new Type_list "{" Args "}"
-  EmptyList   =  new Type "[" Exp "]"
+  NewList     =  new list "[" Args "]"
+  EmptyList   =  new list "[" "]"
   Call        =  id "(" Args ")"
   Args        =  ListOf<Exp, ",">
 
@@ -67,6 +68,7 @@ snake {
   void        = "void" ~idchar
   while       = "loop_while" ~idchar
   function    = "reusable_code" ~idchar
+  list        = "list" ~idchar
 
   keyword     =  boolean | if | break | else | number | for | new
               |  return | null | while | true | string | function
@@ -75,12 +77,11 @@ snake {
   id          =  ~keyword letter idchar*
   idchar      =  "_" | alnum
   numberlit   =  digit+ "."? digit* (("E"|"e") ("+"|"-")? digit+)?
-  stringlit   =  ~keyword letter idchar*
+  stringlit   =  "\"" (~"\"" any)* "\""
   
   addop       =  "+" | "-"
   relop       =  "<=?" | "<?" | "=?" | "!=?" | ">=?" | ">?"
   mulop       =  "*" | "/" | "modulus"
-  primtype    =  boolean | string | number
   
   newline     =  "\n" | "\r\n"
 
