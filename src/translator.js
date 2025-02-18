@@ -24,20 +24,20 @@ export default function translate(match) {
         statement.translate();
       }
     },
+    Stmt_emptyLine(_newline) {},
     Stmt_declaration(dec, _newline) {
       dec.translate();
-    },
-    VarDec(type, id, _eq, exp) {
-      const initializer = exp?.translate();
-      locals.set(id.sourceString, type.sourceString);
-      emit(`let ${id.sourceString} = ${initializer};`);
     },
     Stmt_assignment(Assignment, _newline) {
       emit(`${Assignment.translate()};`);
     },
+    // Stmt_call
+    // Stmt_break
+    // Stmt_return
     Stmt_print(_print, args, _newline) {
       emit(`console.log(${args.translate()});`);
     },
+    // Stmt_if
     Stmt_while(_while, exp, block) {
       emit(`while (${exp.translate()}) {`);
       block.translate();
@@ -50,6 +50,25 @@ export default function translate(match) {
         id
       );
       return `${id.sourceString} = ${exp.translate()}`;
+    },
+    VarDec(type, id, _eq, exp) {
+      const initializer = exp?.translate();
+      locals.set(id.sourceString, type.sourceString);
+      emit(`let ${id.sourceString} = ${initializer};`);
+    },
+    FunDec(_fun, id, _open, params, _close, _outputs, _type, block) {
+      emit(`function ${id.sourceString}(${params.translate()}) {`);
+      block.translate();
+      emit(`}`);
+    },
+    Params_none() {
+      return "";
+    },
+    Params_single(_type, id) {
+      return id.sourceString;
+    },
+    Params_multiple(_type, id, _comma, params) {
+      return `${id.sourceString}, ${params.translate()}`;
     },
     Block(_open, statements, _close) {
       statements.translate();
@@ -89,6 +108,9 @@ export default function translate(match) {
         { "+": "+", "-": "-" }[op.sourceString] || op.sourceString;
       return `${left.translate()} ${targetOp} ${right.translate()}`;
     },
+    Exp4_unary(_neg, operand) {
+      return `-${operand.translate()}`;
+    },
     Exp5_binary(left, op, right) {
       const targetOp =
         { "*": "*", "/": "/", modulus: "%" }[op.sourceString] ||
@@ -101,17 +123,40 @@ export default function translate(match) {
     Exp6(args) {
       return args.translate();
     },
+    Var_subscript(id, _open, exp, _close) {
+      return `${id.sourceString}[${exp.translate()}]`;
+    },
+    Var_property(id, _dot, prop) {
+      return `${id.sourceString}.${prop.sourceString}`;
+    },
+    NewList(_new, _list, _open, args, _close) {
+      return `[${args.translate()}]`;
+    },
+    EmptyList(_new, _list, _open, _close) {
+      return `new Array()`;
+    },
+    Call(id, _open, args, _close) {
+      check(
+        locals.has(id.sourceString),
+        `Undefined function ${id.sourceString}`,
+        id
+      );
+      return `${id.sourceString}(${args.translate()});`;
+    },
     Args(args) {
       return args
         .asIteration()
         .children.map((arg) => arg.translate())
         .join(", ");
     },
+    id(_first, _rest) {
+      return this.sourceString;
+    },
     numberlit(_digits, _period, _decimals, _e, _unary, _exponent) {
       return Number(this.sourceString);
     },
-    stringlit(_letter, _chars) {
-      return `${this.sourceString}`;
+    stringlit(_open, chars, _close) {
+      return `${chars.sourceString}`;
     },
     newline(_) {
       return "";
@@ -119,14 +164,6 @@ export default function translate(match) {
     _iter(...children) {
       return children.map((child) => child.translate());
     },
-    // id(_first, _rest) {
-    //   const name = this.sourceString;
-    //   check(locals.has(name), `Undefined variable ${name}`, this);
-    //   return name;
-    // },
-    // Factor_negation(_op, operand) {
-    //   return `-${operand.translate()}`;
-    // },
   });
 
   translator(match).translate();
