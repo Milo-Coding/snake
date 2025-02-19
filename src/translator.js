@@ -100,7 +100,7 @@ export default function translate(match) {
           "<=?": "<=",
           ">?": ">",
           ">=?": ">=",
-        }[op.sourceString] || op.sourceString;
+        }?.[op.sourceString] ?? op.sourceString;
       return `${left.translate()} ${targetOp} ${right.translate()}`;
     },
     Exp4_binary(left, op, right) {
