@@ -68,14 +68,17 @@ export default function translate(match) {
       block.translate();
       emit(`}`);
     },
-    Params_none() {
-      return "";
+    Params(params) {
+      return params.asIteration().children.map((p) => p.translate());
     },
-    Params_single(_type, id) {
+    Param(_type, id) {
+      check(
+        !locals.has(id.sourceString),
+        `Variable already defined ${id.sourceString}`,
+        id
+      );
+      locals.set(id.sourceString, _type.sourceString);
       return id.sourceString;
-    },
-    Params_multiple(_type, id, _comma, params) {
-      return `${id.sourceString}, ${params.translate()}`;
     },
     Block(_open, statements, _close) {
       statements.translate();

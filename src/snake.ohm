@@ -17,9 +17,8 @@ snake {
               
   VarDec      =  Type id ("is" Exp)?
   FunDec      =  function id "(" Params ")" "outputs" (void | Type) Block
-  Params      =  Type id "," Params         -- multiple
-              |  Type id                    -- single
-              |                             -- none
+  Params      =  ListOf<Param, ",">
+  Param       =  Type id
   Block       =  "{" Stmt* "}"
   
   Exp         =  NonemptyListOf<Exp1, "or"> 
