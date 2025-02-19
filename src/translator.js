@@ -46,12 +46,19 @@ export default function translate(match) {
     Assignment(id, _eq, exp) {
       check(
         locals.has(id.sourceString),
-        `Undefined variable ${id.sourceString}`,
+        `Variable not defined ${id.sourceString}`,
         id
       );
-      return `${id.sourceString} = ${exp.translate()}`;
+      const value = exp.translate();
+      const variable = id.translate();
+      return `${variable} = ${value};`;
     },
     VarDec(type, id, _eq, exp) {
+      check(
+        !locals.has(id.sourceString),
+        `Variable already defined ${id.sourceString}`,
+        id
+      );
       const initializer = exp?.translate();
       locals.set(id.sourceString, type.sourceString);
       emit(`let ${id.sourceString} = ${initializer};`);
@@ -143,13 +150,16 @@ export default function translate(match) {
       );
       return `${id.sourceString}(${args.translate()});`;
     },
-    Args(args) {
-      return args
-        .asIteration()
-        .children.map((arg) => arg.translate())
-        .join(", ");
+    Args(expressions) {
+      // This just returns a list of expression nodes
+      return expressions.asIteration().children.map((arg) => arg.translate());
     },
     id(_first, _rest) {
+      check(
+        locals.has(this.sourceString),
+        `Undefined variable ${this.sourceString}`,
+        this
+      );
       return this.sourceString;
     },
     numberlit(_digits, _period, _decimals, _e, _unary, _exponent) {
