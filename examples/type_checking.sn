@@ -1,0 +1,4 @@
+truth_value x is false
+truth_value y is x
+y is true
+print x or false

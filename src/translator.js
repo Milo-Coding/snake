@@ -18,6 +18,22 @@ export default function translate(match) {
     }
   }
 
+  function checkNotDeclared(name, node) {
+    check(!locals.has(name), `Variable already declared: ${name}`, node);
+  }
+
+  function checkDeclared(name, node) {
+    check(locals.has(name), `Variable not declared: ${name}`, node);
+  }
+
+  // function checkType(name, type, node) {
+  //   check(
+  //     locals.get(name) === type,
+  //     `Type mismatch: expected ${type}, found ${locals.get(name)}`,
+  //     node
+  //   );
+  // }
+
   const translator = grammar.createSemantics().addOperation("translate", {
     Program(statements) {
       for (const statement of statements.children) {
@@ -44,21 +60,13 @@ export default function translate(match) {
       emit(`}`);
     },
     Assignment(id, _eq, exp) {
-      check(
-        locals.has(id.sourceString),
-        `Variable not defined ${id.sourceString}`,
-        id
-      );
+      checkDeclared(id.sourceString, id);
       const value = exp.translate();
       const variable = id.translate();
       return `${variable} = ${value};`;
     },
     VarDec(type, id, _eq, exp) {
-      check(
-        !locals.has(id.sourceString),
-        `Variable already defined ${id.sourceString}`,
-        id
-      );
+      checkNotDeclared(id.sourceString, id);
       const initializer = exp?.translate();
       locals.set(id.sourceString, type.sourceString);
       emit(`let ${id.sourceString} = ${initializer};`);
@@ -72,11 +80,7 @@ export default function translate(match) {
       return params.asIteration().children.map((p) => p.translate());
     },
     Param(_type, id) {
-      check(
-        !locals.has(id.sourceString),
-        `Variable already defined ${id.sourceString}`,
-        id
-      );
+      checkNotDeclared(id.sourceString, id);
       locals.set(id.sourceString, _type.sourceString);
       return id.sourceString;
     },
@@ -84,6 +88,14 @@ export default function translate(match) {
       statements.translate();
     },
     Exp(args) {
+      // one argument
+      if (args.asIteration().children.length === 1) {
+        return args.asIteration().children[0].translate();
+      }
+      // multiple arguments
+      // args.asIteration().children.forEach((arg) => {
+      //   checkType(arg.sourceString, "truth_value", arg);
+      // });
       return args
         .asIteration()
         .children.map((arg) => arg.translate())
@@ -146,23 +158,20 @@ export default function translate(match) {
       return `new Array()`;
     },
     Call(id, _open, args, _close) {
-      check(
-        locals.has(id.sourceString),
-        `Undefined function ${id.sourceString}`,
-        id
-      );
+      checkDeclared(id.sourceString, id);
       return `${id.sourceString}(${args.translate()});`;
     },
     Args(expressions) {
-      // This just returns a list of expression nodes
       return expressions.asIteration().children.map((arg) => arg.translate());
     },
+    true(_) {
+      return true;
+    },
+    false(_) {
+      return false;
+    },
     id(_first, _rest) {
-      check(
-        locals.has(this.sourceString),
-        `Undefined variable ${this.sourceString}`,
-        this
-      );
+      checkDeclared(this.sourceString, this);
       return this.sourceString;
     },
     numberlit(_digits, _period, _decimals, _e, _unary, _exponent) {
@@ -182,3 +191,7 @@ export default function translate(match) {
   translator(match).translate();
   return target;
 }
+
+Number.prototype.type = "number";
+String.prototype.type = "text";
+Boolean.prototype.type = "truth_value";
