@@ -28,7 +28,7 @@ export default function translate(match) {
 
   // function checkType(name, type, node) {
   //   check(
-  //     locals.get(name) === type,
+  //     locals.get(name)?.type === type,
   //     `Type mismatch: expected ${type}, found ${locals.get(name)}`,
   //     node
   //   );
@@ -68,8 +68,17 @@ export default function translate(match) {
     VarDec(type, id, _eq, exp) {
       checkNotDeclared(id.sourceString, id);
       const initializer = exp?.translate();
-      locals.set(id.sourceString, type.sourceString);
-      emit(`let ${id.sourceString} = ${initializer};`);
+      const variable = {
+        kind: "variable",
+        name: id.sourceString,
+        type: type.sourceString,
+        mutable: true,
+        toString() {
+          return this.name;
+        },
+      };
+      locals.set(id.sourceString, variable);
+      emit(`let ${variable.name} = ${initializer};`);
     },
     FunDec(_fun, id, _open, params, _close, _outputs, _type, block) {
       emit(`function ${id.sourceString}(${params.translate()}) {`);
@@ -172,7 +181,7 @@ export default function translate(match) {
     },
     id(_first, _rest) {
       checkDeclared(this.sourceString, this);
-      return this.sourceString;
+      return locals.get(this.sourceString);
     },
     numberlit(_digits, _period, _decimals, _e, _unary, _exponent) {
       return Number(this.sourceString);
