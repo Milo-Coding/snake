@@ -1,4 +1,4 @@
-import { declaration } from "./core.js";
+import { variable /* TODO: rest */ } from "./core.js";
 
 export default function analyze(match) {
   const grammar = match.matcher.grammar;
@@ -22,13 +22,13 @@ export default function analyze(match) {
     check(locals.has(name), `Variable not declared: ${name}`, node);
   }
 
-  // function checkType(name, type, node) {
-  //   check(
-  //     locals.get(name)?.type === type,
-  //     `Type mismatch: expected ${type}, found ${locals.get(name)}`,
-  //     node
-  //   );
-  // }
+  function checkType(name, type, node) {
+    check(
+      locals.get(name).type === type,
+      `Expected type ${type} but got ${name.type}`,
+      node
+    );
+  }
 
   const translator = grammar.createSemantics().addOperation("analyze", {
     Program(statements) {
@@ -40,16 +40,32 @@ export default function analyze(match) {
     //             |  Call newline               -- call
     //             |  break newline              -- break
     //             |  return Exp? newline        -- return
-    //             |  print Args newline         -- print
+    Stmt_print(_print, args, _newline) {
+      return printStatement(args.analyze());
+    },
     //             |  if Exp Block (else if Exp Block)* (else Block)?  -- if
-    //             |  while Exp Block            -- while
-
-    // Assignment  =  Var "is" Exp
+    Stmt_While(_while, exp, block) {
+      const test = exp.analyze();
+      checkType(test, "boolean", exp);
+      return whileStatement(test, block.analyze());
+    },
+    Assignment(varNode, _is, exp) {
+      const variable = varNode.analyze();
+      checkDeclared(variable.name, varNode);
+      const source = exp.analyze();
+      return assignmentStatement(source, variable);
+    },
     // Dec         =  VarDec | FunDec
 
     // Type        =  boolean | string | number
 
-    // VarDec      =  Type id ("is" Exp)?
+    VarDec(type, id, _is, exp) {
+      checkNotDeclared(id.sourceString, id);
+      const initializer = exp ? exp.analyze() : null;
+      const variable = variable(id.sourceString, type.sourceString, true);
+      locals.set(id.sourceString, variable);
+      return declaration(variable, initializer);
+    },
     // FunDec      =  function id "(" Params ")" "outputs" (void | Type) Block
     // Params      =  ListOf<Param, ",">
     // Param       =  Type id
@@ -110,7 +126,11 @@ export default function analyze(match) {
     //             |  return | null | while | true | string | function
     //             |  void | false | print | or | and | list
 
-    // id          =  ~keyword letter idchar*
+    id(_first, _rest) {
+      checkDeclared(this.sourceString, this);
+      const entity = locals.get(this.sourceString);
+      return variable(entity.name, entity.type, entity.mutable);
+    },
     // idchar      =  "_" | alnum
     // numberlit   =  digit+ "."? digit* (("E"|"e") ("+"|"-")? digit+)?
     // stringlit   =  "\"" (~"\"" any)* "\""
