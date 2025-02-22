@@ -21,17 +21,18 @@ snake {
   Param       =  Type id
   Block       =  "{" Stmt* "}"
   
-  Exp         =  NonemptyListOf<Exp1, "or"> 
-  Exp1        =  NonemptyListOf<Exp2, "and">
-  Exp2        =  NonemptyListOf<Exp3, "^">
-  Exp3        =  Exp4 relop Exp4            -- binary
-              |  Exp4
-  Exp4        =  Exp4 addop Exp5            -- binary
-              |  "-" Exp5                   -- unary
-              |  Exp5
-  Exp5        =  Exp5 mulop Exp6            -- binary
-              |  Exp6
-  Exp6        =  Literal
+  Exp         =  Condition or Condition     -- or
+              |  Condition and Condition    -- and
+              |  Condition relop Condition  -- relop
+              |  Condition
+  Condition   =  Exp addop Term             -- add
+              |  Term
+  Term        =  Term mulop Factor          -- binary
+              |  Factor
+  Factor      =  Primary "^" Factor         -- power
+              |  "-" Factor                 -- unary
+              |  Primary
+  Primary     =  Literal
               |  Var
               |  NewList
               |  EmptyList
@@ -51,27 +52,29 @@ snake {
   Call        =  id "(" Args ")"
   Args        =  ListOf<Exp, ",">
 
-  boolean     = "truth_value" ~idchar
-  break       = "stop_loop" ~idchar
-  else        = "else" ~idchar
-  false       = "false" ~idchar
-  for         = "for" ~idchar
-  if          = "if" ~idchar
-  number      = "number" ~idchar
-  new         = "new" ~idchar
-  null        = "no_value" ~idchar
-  print       = "print" ~idchar
-  return      = "return" ~idchar
-  string      = "text" ~idchar
-  true        = "true" ~idchar
-  void        = "void" ~idchar
-  while       = "loop_while" ~idchar
-  function    = "reusable_code" ~idchar
-  list        = "list" ~idchar
+  boolean     =  "truth_value" ~idchar
+  break       =  "stop_loop" ~idchar
+  else        =  "else" ~idchar
+  false       =  "false" ~idchar
+  for         =  "for" ~idchar
+  if          =  "if" ~idchar
+  number      =  "number" ~idchar
+  new         =  "new" ~idchar
+  null        =  "no_value" ~idchar
+  print       =  "print" ~idchar
+  return      =  "return" ~idchar
+  string      =  "text" ~idchar
+  true        =  "true" ~idchar
+  void        =  "void" ~idchar
+  while       =  "loop_while" ~idchar
+  function    =  "reusable_code" ~idchar
+  list        =  "list" ~idchar
+  or          =  "or" ~idchar
+  and         =  "and" ~idchar
 
   keyword     =  boolean | if | break | else | number | for | new
               |  return | null | while | true | string | function
-              | void | false | print
+              |  void | false | print | or | and | list
               
   id          =  ~keyword letter idchar*
   idchar      =  "_" | alnum

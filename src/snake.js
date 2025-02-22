@@ -12,9 +12,8 @@ if (process.argv.length !== 3) {
 try {
   const source = fs.readFileSync(process.argv[2], "utf8");
   const match = parse(source);
-  // const program = analyze(match);
-  // const target = translate(program);
-  const target = translate(match);
+  const program = analyze(match);
+  const target = translate(program);
   console.log(target.join("\n"));
 } catch (error) {
   console.error(`${error}`);
