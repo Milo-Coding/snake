@@ -34,7 +34,14 @@ export function printStatement(args) {
 }
 
 //               |  if Exp Block (else if Exp Block)* (else Block)?  -- if
-//               |  while Exp Block            -- while
+
+export function whileStatement(test, body) {
+  return {
+    kind: "whileStatement",
+    test,
+    body,
+  };
+}
 
 //   Assignment  =  Var "is" Exp
 //   Dec         =  VarDec | FunDec
@@ -60,17 +67,25 @@ export function block(statements) {
   };
 }
 
-//   Exp         =  Condition or Condition     -- or
-//               |  Condition and Condition    -- and
-//               |  Condition relop Condition  -- relop
-//               |  Condition
-//   Condition   =  Exp addop Term             -- add
-//               |  Term
-//   Term        =  Term mulop Factor          -- binary
-//               |  Factor
-//   Factor      =  Primary "^" Factor         -- power
-//               |  "-" Factor                 -- unary
-//               |  Primary
+export function binaryExpression(left, right, operator, type) {
+  return {
+    kind: "binaryExpression",
+    left,
+    right,
+    operator,
+    type,
+  };
+}
+
+export function unaryExpression(operator, operand, type) {
+    return {
+        kind: "unaryExpression",
+        operator,
+        operand,
+        type,
+    };
+    }
+
 //   Primary     =  Literal
 //               |  Var
 //               |  NewList
@@ -124,7 +139,11 @@ export function block(statements) {
 //   relop       =  "<=?" | "<?" | "=?" | "!=?" | ">=?" | ">?"
 //   mulop       =  "*" | "/" | "modulus"
 
-//   newline     =  "\n" | "\r\n"
+export function newline() {
+  return {
+    kind: "newline",
+  };
+}
 
 //   space      :=  " " | "\t" | comment
 //   comment     =  "//" (~"\n" any)*

@@ -1,4 +1,4 @@
-import { block, variable /* TODO: rest */ } from "./core.js";
+import * as core from "./core.js";
 
 export default function analyze(match) {
   const grammar = match.matcher.grammar;
@@ -24,7 +24,7 @@ export default function analyze(match) {
 
   function checkType(name, type, node) {
     check(
-      locals.get(name).type === type,
+      locals.get(name) ? locals.get(name).type === type : name.type === type,
       `Expected type ${type} but got ${name.type}`,
       node
     );
@@ -32,28 +32,30 @@ export default function analyze(match) {
 
   const translator = grammar.createSemantics().addOperation("analyze", {
     Program(statements) {
-      return program(statements.children.map((s) => s.analyze()));
+      return core.program(statements.children.map((s) => s.analyze()));
     },
     // Stmt        =  newline			     	         -- emptyLine
-    //             |  Dec newline                -- declaration
+    Stmt_declaration(dec, _newline) {
+      return dec.analyze();
+    },
     //             |  Assignment newline         -- assignment
     //             |  Call newline               -- call
     //             |  break newline              -- break
     //             |  return Exp? newline        -- return
     Stmt_print(_print, args, _newline) {
-      return printStatement(args.analyze());
+      return core.printStatement(args.analyze());
     },
     //             |  if Exp Block (else if Exp Block)* (else Block)?  -- if
-    Stmt_While(_while, exp, block) {
+    Stmt_while(_while, exp, block, _newline) {
       const test = exp.analyze();
       checkType(test, "boolean", exp);
-      return whileStatement(test, block.analyze());
+      return core.whileStatement(test, block.analyze());
     },
     Assignment(varNode, _is, exp) {
       const variable = varNode.analyze();
       checkDeclared(variable.name, varNode);
       const source = exp.analyze();
-      return assignmentStatement(source, variable);
+      return core.assignmentStatement(source, variable);
     },
     // Dec         =  VarDec | FunDec
 
@@ -62,32 +64,76 @@ export default function analyze(match) {
     VarDec(type, id, _is, exp) {
       checkNotDeclared(id.sourceString, id);
       const initializer = exp ? exp.analyze() : null;
-      const variable = variable(id.sourceString, type.sourceString, true);
+      const variable = core.variable(id.sourceString, type.sourceString, true);
       locals.set(id.sourceString, variable);
-      return declaration(variable, initializer);
+      return core.variableDeclaration(variable, initializer);
     },
     // FunDec      =  function id "(" Params ")" "outputs" (void | Type) Block
     // Params      =  ListOf<Param, ",">
     // Param       =  Type id
     Block(_open, statements, _close) {
-      return block(statements.children.map((s) => s.analyze()));
+      return core.block(statements.children.map((s) => s.analyze()));
     },
-    // Exp         =  Condition or Condition     -- or
-    //             |  Condition and Condition    -- and
-    //             |  Condition relop Condition  -- relop
-    //             |  Condition
-    // Condition   =  Exp addop Term             -- add
-    //             |  Term
-    // Term        =  Term mulop Factor          -- binary
-    //             |  Factor
-    // Factor      =  Primary "^" Factor         -- power
-    //             |  "-" Factor                 -- unary
-    //             |  Primary
+    Exp_or(left, _or, right) {
+      const leftValue = left.analyze();
+      const rightValue = right.analyze();
+      checkType(leftValue, "boolean", left);
+      checkType(rightValue, "boolean", right);
+      return core.binaryExpression(leftValue, rightValue, "||", "boolean");
+    },
+    Exp_and(left, _and, right) {
+      const leftValue = left.analyze();
+      const rightValue = right.analyze();
+      checkType(leftValue, "boolean", left);
+      checkType(rightValue, "boolean", right);
+      return core.binaryExpression(leftValue, rightValue, "&&", "boolean");
+    },
+    Exp_relop(left, relop, right) {
+      const leftValue = left.analyze();
+      const rightValue = right.analyze();
+      // TODO: Needs type checking for non numbers
+      checkType(leftValue, "number", left);
+      checkType(rightValue, "number", right);
+      return core.binaryExpression(
+        leftValue,
+        rightValue,
+        relop.sourceString,
+        "boolean"
+      );
+    },
+    Condition_binary(exp, addop, term) {
+      const left = exp.analyze();
+      const right = term.analyze();
+      checkType(left, "number", exp);
+      checkType(right, "number", term);
+      return core.binaryExpression(left, right, addop.sourceString, "number");
+    },
+    Term_binary(term, mulop, factor) {
+      const left = term.analyze();
+      const right = factor.analyze();
+      checkType(left, "number", term);
+      checkType(right, "number", factor);
+      return core.binaryExpression(left, right, mulop.sourceString, "number");
+    },
+    Factor_power(left, _power, right) {
+      const base = left.analyze();
+      const exponent = right.analyze();
+      checkType(base, "number", left);
+      checkType(exponent, "number", right);
+      return core.binaryExpression(base, exponent, "**", "number");
+    },
+    Factor_unary(_op, exp) {
+      const operand = exp.analyze();
+      checkType(operand, "number", exp);
+      return core.unaryExpression("-", operand, "number");
+    },
     // Primary     =  Literal
     //             |  Var
     //             |  NewList
     //             |  EmptyList
-    //             |  "(" Exp ")"                -- parens
+    Primary_parens(_open, exp, _close) {
+      return exp.analyze();
+    },
     // Literal     =  null
     //             |  true
     //             |  false
@@ -102,11 +148,15 @@ export default function analyze(match) {
     // EmptyList   =  new list "[" "]"
     // Call        =  id "(" Args ")"
     // Args        =  ListOf<Exp, ",">
-
+    Args(expressions) {
+      return expressions.asIteration().children.map((e) => e.analyze());
+    },
     // boolean     =  "truth_value" ~idchar
     // break       =  "stop_loop" ~idchar
     // else        =  "else" ~idchar
-    // false       =  "false" ~idchar
+    false(_) {
+      return false;
+    },
     // for         =  "for" ~idchar
     // if          =  "if" ~idchar
     // number      =  "number" ~idchar
@@ -115,7 +165,9 @@ export default function analyze(match) {
     // print       =  "print" ~idchar
     // return      =  "return" ~idchar
     // string      =  "text" ~idchar
-    // true        =  "true" ~idchar
+    true(_) {
+      return true;
+    },
     // void        =  "void" ~idchar
     // while       =  "loop_while" ~idchar
     // function    =  "reusable_code" ~idchar
@@ -130,22 +182,35 @@ export default function analyze(match) {
     id(_first, _rest) {
       checkDeclared(this.sourceString, this);
       const entity = locals.get(this.sourceString);
-      return variable(entity.name, entity.type, entity.mutable);
+      return entity;
     },
     // idchar      =  "_" | alnum
-    // numberlit   =  digit+ "."? digit* (("E"|"e") ("+"|"-")? digit+)?
-    // stringlit   =  "\"" (~"\"" any)* "\""
+    numberlit(_digits, _period, _decimals, _e, _unary, _exponent) {
+      return Number(this.sourceString);
+    },
+    stringlit(_open, chars, _close) {
+      return `${chars.sourceString}`;
+    },
 
     // addop       =  "+" | "-"
     // relop       =  "<=?" | "<?" | "=?" | "!=?" | ">=?" | ">?"
     // mulop       =  "*" | "/" | "modulus"
 
-    // newline     =  "\n" | "\r\n"
+    newline(_) {
+      return core.newline();
+    },
 
     // space      :=  " " | "\t" | comment
     // comment     =  "//" (~"\n" any)*
+    _iter(...children) {
+      return children.map((child) => child.analyze());
+    },
   });
 
   translator(match).analyze();
   return target;
 }
+
+Number.prototype.type = "number";
+String.prototype.type = "text";
+Boolean.prototype.type = "truth_value";
