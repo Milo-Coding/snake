@@ -4,5 +4,3 @@ Things to note in readme:
 - Variables must be intilized when declared
 - Removing input statements
 - .sn files must end in an empty line
-
-change lists to work like lists, not arrays
