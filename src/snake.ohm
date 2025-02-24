@@ -25,7 +25,7 @@ snake {
               |  Condition and Condition    -- and
               |  Condition relop Condition  -- relop
               |  Condition
-  Condition   =  Exp addop Term             -- add
+  Condition   =  Exp addop Term             -- binary
               |  Term
   Term        =  Term mulop Factor          -- binary
               |  Factor
@@ -88,5 +88,5 @@ snake {
   newline     =  "\n" | "\r\n"
 
   space      :=  " " | "\t" | comment
-  comment     =  "//" (~"\n" any)*
+  comment     =  "//" (~newline any)* newline
 }
