@@ -78,13 +78,13 @@ export function binaryExpression(left, right, operator, type) {
 }
 
 export function unaryExpression(operator, operand, type) {
-    return {
-        kind: "unaryExpression",
-        operator,
-        operand,
-        type,
-    };
-    }
+  return {
+    kind: "unaryExpression",
+    operator,
+    operand,
+    type,
+  };
+}
 
 //   Primary     =  Literal
 //               |  Var
@@ -96,13 +96,31 @@ export function unaryExpression(operator, operand, type) {
 //               |  false
 //               |  numberlit
 //               |  stringlit
-//   Var         =  Var "[" Exp "]"            -- subscript
-//               |  Var "." id                 -- property
+
+export function subscript(variable, subscript) {
+  return {
+    kind: "subscript",
+    variable,
+    subscript,
+  };
+}
+//  Var          =  Var "." id                 -- property
 //               |  Call
 //               |  id
 
-//   NewList     =  new list "[" Args "]"
-//   EmptyList   =  new list "[" "]"
+export function newList(args) {
+  return {
+    kind: "newList",
+    args,
+  };
+}
+
+export function emptyList() {
+  return {
+    kind: "emptyList",
+  };
+}
+
 //   Call        =  id "(" Args ")"
 //   Args        =  ListOf<Exp, ",">
 

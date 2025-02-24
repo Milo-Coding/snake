@@ -13,7 +13,7 @@ snake {
   Assignment  =  Var "is" Exp
   Dec         =  VarDec | FunDec
 
-  Type        =  boolean | string | number
+  Type        =  boolean | string | number | list
               
   VarDec      =  Type id ("is" Exp)?
   FunDec      =  function id "(" Params ")" "outputs" (void | Type) Block

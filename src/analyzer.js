@@ -53,7 +53,9 @@ export default function analyze(match) {
     Stmt_declaration(dec, _newline) {
       return dec.analyze();
     },
-    //             |  Assignment newline         -- assignment
+    Stmt_assignment(assignment, _newline) {
+      return assignment.analyze();
+    },
     //             |  Call newline               -- call
     //             |  break newline              -- break
     //             |  return Exp? newline        -- return
@@ -70,6 +72,7 @@ export default function analyze(match) {
       const variable = varNode.analyze();
       checkDeclared(variable.name, varNode);
       const source = exp.analyze();
+      checkSameType(variable, source, exp);
       return core.assignmentStatement(source, variable);
     },
     // Dec         =  VarDec | FunDec
@@ -161,15 +164,24 @@ export default function analyze(match) {
     //             |  false
     //             |  numberlit
     //             |  stringlit
-    // Var         =  Var "[" Exp "]"            -- subscript
-    //             |  Var "." id                 -- property
+    Var_subscript(id, _open, exp, _close) {
+      const variable = id.analyze();
+      const index = exp.analyze();
+      checkType(variable, "list", id);
+      checkType(index, "number", exp);
+      return core.subscript(variable, index);
+    },
+    //  Var        =  Var "." id                 -- property
     //             |  Call
     //             |  id
 
-    // NewList     =  new list "[" Args "]"
-    // EmptyList   =  new list "[" "]"
+    NewList(_new, _list, _open, args, _close) {
+      return core.newList(args.analyze());
+    },
+    EmptyList(_new, _list, _open, _close) {
+      return core.emptyList();
+    },
     // Call        =  id "(" Args ")"
-    // Args        =  ListOf<Exp, ",">
     Args(expressions) {
       return expressions.asIteration().children.map((e) => e.analyze());
     },
@@ -196,34 +208,20 @@ export default function analyze(match) {
     // list        =  "list" ~idchar
     // or          =  "or" ~idchar
     // and         =  "and" ~idchar
-
-    // keyword     =  boolean | if | break | else | number | for | new
-    //             |  return | null | while | true | string | function
-    //             |  void | false | print | or | and | list
-
     id(_first, _rest) {
       checkDeclared(this.sourceString, this);
       const entity = locals.get(this.sourceString);
       return entity;
     },
-    // idchar      =  "_" | alnum
     numberlit(_digits, _period, _decimals, _e, _unary, _exponent) {
       return Number(this.sourceString);
     },
     stringlit(_open, chars, _close) {
       return `${chars.sourceString}`;
     },
-
-    // addop       =  "+" | "-"
-    // relop       =  "<=?" | "<?" | "=?" | "!=?" | ">=?" | ">?"
-    // mulop       =  "*" | "/" | "modulus"
-
     newline(_) {
       return core.newline();
     },
-
-    // space      :=  " " | "\t" | comment
-    // comment     =  "//" (~"\n" any)*
     _iter(...children) {
       return children.map((child) => child.analyze());
     },
