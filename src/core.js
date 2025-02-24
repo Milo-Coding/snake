@@ -52,7 +52,13 @@ export function variableDeclaration(variable, initializer) {
 //   FunDec      =  function id "(" Params ")" "outputs" (void | Type) Block
 //   Params      =  ListOf<Param, ",">
 //   Param       =  Type id
-//   Block       =  "{" Stmt* "}"
+
+export function block(statements) {
+  return {
+    kind: "block",
+    statements,
+  };
+}
 
 //   Exp         =  Condition or Condition     -- or
 //               |  Condition and Condition    -- and

@@ -1,4 +1,4 @@
-import { variable /* TODO: rest */ } from "./core.js";
+import { block, variable /* TODO: rest */ } from "./core.js";
 
 export default function analyze(match) {
   const grammar = match.matcher.grammar;
@@ -69,8 +69,9 @@ export default function analyze(match) {
     // FunDec      =  function id "(" Params ")" "outputs" (void | Type) Block
     // Params      =  ListOf<Param, ",">
     // Param       =  Type id
-    // Block       =  "{" Stmt* "}"
-
+    Block(_open, statements, _close) {
+      return block(statements.children.map((s) => s.analyze()));
+    },
     // Exp         =  Condition or Condition     -- or
     //             |  Condition and Condition    -- and
     //             |  Condition relop Condition  -- relop
