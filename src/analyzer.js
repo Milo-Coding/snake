@@ -91,9 +91,7 @@ export default function analyze(match) {
     Exp_relop(left, relop, right) {
       const leftValue = left.analyze();
       const rightValue = right.analyze();
-      // TODO: Needs type checking for non numbers
-      checkType(leftValue, "number", left);
-      checkType(rightValue, "number", right);
+      checkType(leftValue, rightValue.type, left);
       return core.binaryExpression(
         leftValue,
         rightValue,
