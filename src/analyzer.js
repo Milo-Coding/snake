@@ -23,8 +23,24 @@ export default function analyze(match) {
 
   function checkType(name, type, node) {
     check(
-      locals.get(name) ? locals.get(name).type === type : name.type === type,
+      name.type === type,
       `Expected type ${type} but got ${name.type}`,
+      node
+    );
+  }
+
+  function checkManyTypes(name, types, node) {
+    check(
+      types.includes(name.type),
+      `Expected type to be in [${types}] but got ${name.type}`,
+      node
+    );
+  }
+
+  function checkSameType(left, right, node) {
+    check(
+      left.type === right.type,
+      `Expected same types but got ${left.type} and ${right.type}`,
       node
     );
   }
@@ -91,7 +107,7 @@ export default function analyze(match) {
       const leftValue = left.analyze();
       const rightValue = right.analyze();
       if (relop.sourceString === "=?" || relop.sourceString === "!=?") {
-        checkType(leftValue, rightValue.type, left);
+        checkSameType(leftValue, rightValue, left);
       } else {
         checkType(leftValue, "number", left);
         checkType(rightValue, "number", right);
@@ -106,8 +122,8 @@ export default function analyze(match) {
     Condition_binary(exp, addop, term) {
       const left = exp.analyze();
       const right = term.analyze();
-      checkType(left, "number", exp);
-      checkType(right, "number", term);
+      checkManyTypes(left, ["number", "text"], exp);
+      checkSameType(left, right, exp);
       return core.binaryExpression(left, right, addop.sourceString, "number");
     },
     Term_binary(term, mulop, factor) {
