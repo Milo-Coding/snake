@@ -122,7 +122,11 @@ export default function analyze(match) {
     Condition_binary(exp, addop, term) {
       const left = exp.analyze();
       const right = term.analyze();
-      checkManyTypes(left, ["number", "text"], exp);
+      if (addop.sourceString === "+") {
+        checkManyTypes(left, ["number", "text"], exp);
+      } else {
+        checkType(left, "number", exp);
+      }
       checkSameType(left, right, exp);
       return core.binaryExpression(left, right, addop.sourceString, "number");
     },
