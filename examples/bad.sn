@@ -1,5 +1,7 @@
 print 1
-print x
+// print x
 print 2
 number x is 1
-number x is 2
+// number x is 2
+print "hi"
+print false + "hi"
