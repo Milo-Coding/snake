@@ -128,7 +128,7 @@ export default function analyze(match) {
         checkType(left, "number", exp);
       }
       checkSameType(left, right, exp);
-      return core.binaryExpression(left, right, addop.sourceString, "number");
+      return core.binaryExpression(left, right, addop.sourceString, left.type);
     },
     Term_binary(term, mulop, factor) {
       const left = term.analyze();
