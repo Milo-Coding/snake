@@ -9,13 +9,13 @@ if (process.argv.length !== 3) {
   process.exit(1);
 }
 
-try {
+// try {
   const source = fs.readFileSync(process.argv[2], "utf8");
   const match = parse(source);
   const program = analyze(match);
   const target = translate(program);
-  console.log(target.join("\n"));
-} catch (error) {
-  console.error(`${error}`);
-  process.exit(1);
-}
+  // console.log(target.join("\n"));
+// } catch (error) {
+//   console.error(`${error}`);
+//   process.exit(1);
+// }
