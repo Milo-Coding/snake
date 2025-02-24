@@ -11,12 +11,12 @@ if (process.argv.length !== 3) {
 }
 
 // try {
-  const source = fs.readFileSync(process.argv[2], "utf8");
-  const match = parse(source);
-  const program = analyze(match);
-  console.log(stringify(program, "kind"));
-  const target = translate(program);
-  // console.log(target.join("\n"));
+const source = fs.readFileSync(process.argv[2], "utf8");
+const match = parse(source);
+const program = analyze(match);
+console.log(stringify(program, "kind"));
+// const target = translate(program);
+// console.log(target.join("\n"));
 // } catch (error) {
 //   console.error(`${error}`);
 //   process.exit(1);
