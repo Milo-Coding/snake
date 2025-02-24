@@ -91,7 +91,12 @@ export default function analyze(match) {
     Exp_relop(left, relop, right) {
       const leftValue = left.analyze();
       const rightValue = right.analyze();
-      checkType(leftValue, rightValue.type, left);
+      if (relop.sourceString === "=?" || relop.sourceString === "!=?") {
+        checkType(leftValue, rightValue.type, left);
+      } else {
+        checkType(leftValue, "number", left);
+        checkType(rightValue, "number", right);
+      }
       return core.binaryExpression(
         leftValue,
         rightValue,
