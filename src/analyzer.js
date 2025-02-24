@@ -4,7 +4,6 @@ export default function analyze(match) {
   const grammar = match.matcher.grammar;
 
   const locals = new Map();
-  const target = [];
 
   function check(condition, message, parseTreeNode) {
     if (!condition) {
@@ -30,7 +29,7 @@ export default function analyze(match) {
     );
   }
 
-  const translator = grammar.createSemantics().addOperation("analyze", {
+  const analyzer = grammar.createSemantics().addOperation("analyze", {
     Program(statements) {
       return core.program(statements.children.map((s) => s.analyze()));
     },
@@ -210,8 +209,7 @@ export default function analyze(match) {
     },
   });
 
-  translator(match).analyze();
-  return target;
+  return analyzer(match).analyze();
 }
 
 Number.prototype.type = "number";
