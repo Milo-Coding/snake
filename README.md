@@ -57,11 +57,11 @@ Reading input from a user gives snake a dynamic element and allows for more inte
 | JavaScript              | Python             | snake                       |
 | ----------------------- | ------------------ | --------------------------- |
 | let a = 55;             | a = 55             | number a is 55              |
-| let b = “Hello World!”; | b = "Hello World!" | letters b is "Hello World!" |
+| let b = “Hello World!”; | b = "Hello World!" | text b is "Hello World!" |
 | let c = 1.7;            | c = 1.7            | number c is 1.7             |
 | let d = true;           | d = True           | turth_value d is true       |
 | let e = false;          | e = False          | truth_value e is false      |
-| const f = “Constant”;   | f = "Constant"     | letters f is "Constant"     |
+| const f = “Constant”;   | f = "Constant"     | text f is "Constant"     |
 
 ## Variable Incrementation
 
@@ -125,10 +125,10 @@ Reading input from a user gives snake a dynamic element and allows for more inte
 
 | JavaScript                                                                             | Python                                                                    | snake                                                                                            |
 | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| `let my_list = [1, 2, 3];`<br>`let dict = {a: 1, b: 2};`<br>`console.log(list, dict);` | `my_list = [1, 2, 3]`<br>`dict = {'a': 1, 'b': 2}`<br>`print(list, dict)` | `list my_list is [1, 2, 3]`<br>`name_value_pair dict is {'a': 1, 'b': 2}`<br>`print(list, dict)` |
+| `let my_list = [1, 2, 3];`<br>`let dict = {a: 1, b: 2};`<br>`console.log(list, dict);` | `my_list = [1, 2, 3]`<br>`dict = {'a': 1, 'b': 2}`<br>`print(list, dict)` | `list my_list is [1, 2, 3]`<br>`name_value_pair dict is {"a": 1, "b": 2}`<br>`print(list, dict)` |
 
 ### Input
 
 | JavaScript                                                                     | Python                                                           | snake                                                                    |
 | ------------------------------------------------------------------------------ | ---------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| `const name = prompt("Enter your name:");`<br>`console.log("Hello, " + name);` | `name = input("Enter your name: ")`<br>`print("Hello, " + name)` | `letters name is input("Enter your name:")`<br>`print("Hello, " + name)` |
+| `const name = prompt("Enter your name:");`<br>`console.log("Hello, " + name);` | `name = input("Enter your name: ")`<br>`print("Hello, " + name)` | `text name is input("Enter your name:")`<br>`print("Hello, " + name)` |
