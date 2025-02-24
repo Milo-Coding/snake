@@ -8,7 +8,7 @@ snake {
               |  return Exp? newline        -- return
               |  print Args newline         -- print
               |  if Exp Block (else if Exp Block)* (else Block)?  -- if
-              |  while Exp Block            -- while
+              |  while Exp Block newline    -- while
   
   Assignment  =  Var "is" Exp
   Dec         =  VarDec | FunDec
