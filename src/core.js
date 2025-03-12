@@ -56,7 +56,13 @@ export function variableDeclaration(variable, initializer) {
   };
 }
 
-//   FunDec      =  function id "(" Params ")" "outputs" (void | Type) Block
+export function functionDeclaration(func) {
+  return {
+    kind: "functionDeclaration",
+    func,
+  };
+}
+
 //   Params      =  ListOf<Param, ",">
 //   Param       =  Type id
 
@@ -140,6 +146,17 @@ export function emptyList() {
 //   void        =  "void" ~idchar
 //   while       =  "loop_while" ~idchar
 //   function    =  "reusable_code" ~idchar
+
+export function funct(id, params, type, block) {
+  return {
+    kind: "function",
+    id,
+    params,
+    type,
+    block,
+  };
+}
+
 //   list        =  "list" ~idchar
 //   or          =  "or" ~idchar
 //   and         =  "and" ~idchar

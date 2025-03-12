@@ -3,22 +3,36 @@ import * as core from "./core.js";
 export default function analyze(match) {
   const grammar = match.matcher.grammar;
 
-  const locals = new Map();
-
-  function check(condition, message, parseTreeNode) {
-    if (!condition) {
-      throw new Error(
-        `${parseTreeNode.source.getLineAndColumnMessage()} ${message}`
-      );
+  class Context {
+    constructor(parent = null) {
+      this.locals = new Map();
+      this.parent = parent;
+    }
+    add(name, entity) {
+      this.locals.set(name, entity);
+    }
+    has(name) {
+      return this.locals.has(name);
+    }
+    lookup(name) {
+      return this.locals.get(name) ?? (this.parent && this.parent.lookup(name));
     }
   }
 
-  function checkNotDeclared(name, node) {
-    check(!locals.has(name), `Variable already declared: ${name}`, node);
+  let context = new Context();
+
+  function check(condition, message, node) {
+    if (!condition) {
+      throw new Error(`${node.source.getLineAndColumnMessage()} ${message}`);
+    }
   }
 
-  function checkDeclared(name, node) {
-    check(locals.has(name), `Variable not declared: ${name}`, node);
+  function checkDeclared(entity, node) {
+    check(entity, `${entity} not declared`, node);
+  }
+
+  function checkNotDeclared(name, node) {
+    check(!context.has(name), `Variable already declared: ${name}`, node);
   }
 
   function checkType(name, type, node) {
@@ -83,12 +97,32 @@ export default function analyze(match) {
       checkNotDeclared(id.sourceString, id);
       const initializer = exp ? exp.analyze() : null;
       const variable = core.variable(id.sourceString, type.sourceString, true);
-      locals.set(id.sourceString, variable);
+      context.add(id.sourceString, variable);
       return core.variableDeclaration(variable, initializer);
     },
-    // FunDec      =  function id "(" Params ")" "outputs" (void | Type) Block
-    // Params      =  ListOf<Param, ",">
-    // Param       =  Type id
+    FunDec(_function, id, _open, params, _close, _outputs, type, block) {
+      checkNotDeclared(id.sourceString, id);
+      context = new Context(context);
+      const parameters = params.analyze();
+      const body = block.analyze();
+      context = context.parent;
+      const fun = core.funct(
+        id.sourceString,
+        parameters,
+        type.sourceString,
+        body
+      );
+      context.add(id.sourceString, fun);
+      return core.functionDeclaration(fun);
+    },
+    Params(params) {
+      return params.asIteration().children.map((p) => p.analyze());
+    },
+    Param(type, id) {
+      const param = core.variable(id.sourceString, type.sourceString, true);
+      context.add(id.sourceString, param);
+      return param;
+    },
     Block(_open, statements, _close) {
       return core.block(statements.children.map((s) => s.analyze()));
     },
@@ -209,8 +243,8 @@ export default function analyze(match) {
     // or          =  "or" ~idchar
     // and         =  "and" ~idchar
     id(_first, _rest) {
-      checkDeclared(this.sourceString, this);
-      const entity = locals.get(this.sourceString);
+      const entity = context.lookup(this.sourceString);
+      checkDeclared(entity, this);
       return entity;
     },
     numberlit(_digits, _period, _decimals, _e, _unary, _exponent) {
