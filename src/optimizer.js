@@ -1,3 +1,4 @@
-export default function optimize() {
-  throw new Error("Not yet implemented");
+export default function optimize(program) {
+  // TODO: Implement optimizer
+  return program;
 }

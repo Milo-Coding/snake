@@ -113,7 +113,7 @@ export default function analyze(match) {
         body
       );
       context.add(id.sourceString, fun);
-      return core.functionDeclaration(fun);
+      return core.functionDeclaration(fun, body);
     },
     Params(params) {
       return params.asIteration().children.map((p) => p.analyze());

@@ -56,10 +56,11 @@ export function variableDeclaration(variable, initializer) {
   };
 }
 
-export function functionDeclaration(func) {
+export function functionDeclaration(func, body) {
   return {
     kind: "functionDeclaration",
     func,
+    body,
   };
 }
 

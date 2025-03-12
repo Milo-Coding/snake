@@ -1,23 +1,34 @@
-// snake compiler
-import * as fs from "fs";
-import stringify from "graph-stringify";
-import parse from "./parser.js";
-import analyze from "./analyzer.js";
-import translate from "./translator.js";
+#! /usr/bin/env node
 
-if (process.argv.length !== 3) {
-  console.error("Usage: node src/snake.js <source>");
-  process.exit(1);
+import * as fs from "node:fs/promises"
+import stringify from "graph-stringify"
+import compile from "./compiler.js"
+
+const help = `snake compiler
+
+Syntax: snake <filename> <outputType>
+
+Prints to stdout according to <outputType>, which must be one of:
+
+  parsed     a message that the program was matched ok by the grammar
+  analyzed   the statically analyzed representation
+  optimized  the optimized semantically analyzed representation
+  js         the translation to JavaScript
+`
+
+async function compileFromFile(filename, outputType) {
+  try {
+    const buffer = await fs.readFile(filename)
+    const compiled = compile(buffer.toString(), outputType)
+    console.log(stringify(compiled, "kind") || compiled)
+  } catch (e) {
+    console.error(`\u001b[31m${e}\u001b[39m`)
+    process.exitCode = 1
+  }
 }
 
-// try {
-const source = fs.readFileSync(process.argv[2], "utf8");
-const match = parse(source);
-const program = analyze(match);
-console.log(stringify(program, "kind"));
-// const target = translate(program);
-// console.log(target.join("\n"));
-// } catch (error) {
-//   console.error(`${error}`);
-//   process.exit(1);
-// }
+if (process.argv.length !== 4) {
+  console.log(help)
+} else {
+  compileFromFile(process.argv[2], process.argv[3])
+}
