@@ -10,12 +10,12 @@ snake {
               |  if Exp Block (else if Exp Block)* (else Block)?  -- if
               |  while Exp Block newline    -- while
   
-  Assignment  =  Var "is" Exp
+  Assignment  =  Var is Exp
   Dec         =  VarDec | FunDec
 
   Type        =  boolean | string | number | list
               
-  VarDec      =  Type id ("is" Exp)?
+  VarDec      =  Type id (is Exp)?
   FunDec      =  function id "(" Params ")" "outputs" (void | Type) Block
   Params      =  ListOf<Param, ",">
   Param       =  Type id
@@ -71,10 +71,11 @@ snake {
   list        =  "list" ~idchar
   or          =  "or" ~idchar
   and         =  "and" ~idchar
+  is          =  "is" ~idchar
 
   keyword     =  boolean | if | break | else | number | for | new
               |  return | null | while | true | string | function
-              |  void | false | print | or | and | list
+              |  void | false | print | or | and | list | is
               
   id          =  ~keyword letter idchar*
   idchar      =  "_" | alnum
