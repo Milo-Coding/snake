@@ -63,16 +63,21 @@ export default function analyze(match) {
     Program(statements) {
       return core.program(statements.children.map((s) => s.analyze()));
     },
-    // Stmt        =  newline			     	         -- emptyLine
     Stmt_declaration(dec, _newline) {
       return dec.analyze();
     },
     Stmt_assignment(assignment, _newline) {
       return assignment.analyze();
     },
-    //             |  Call newline               -- call
-    //             |  break newline              -- break
-    //             |  return Exp? newline        -- return
+    Stmt_call(call, _newline) {
+      return core.callStatement(call.analyze());
+    },
+    Stmt_break(_break, _newline) {
+      return core.breakStatement();
+    },
+    Stmt_return(_return, exp, _newline) {
+      return core.returnStatement(exp.analyze());
+    },
     Stmt_print(_print, args, _newline) {
       return core.printStatement(args.analyze());
     },
@@ -87,12 +92,8 @@ export default function analyze(match) {
       checkDeclared(variable.name, varNode);
       const source = exp.analyze();
       checkSameType(variable, source, exp);
-      return core.assignmentStatement(source, variable);
+      return core.assignment(source, variable);
     },
-    // Dec         =  VarDec | FunDec
-
-    // Type        =  boolean | string | number
-
     VarDec(type, id, _is, exp) {
       checkNotDeclared(id.sourceString, id);
       const initializer = exp ? exp.analyze() : null;
@@ -186,18 +187,9 @@ export default function analyze(match) {
       checkType(operand, "number", exp);
       return core.unaryExpression("-", operand, "number");
     },
-    // Primary     =  Literal
-    //             |  Var
-    //             |  NewList
-    //             |  EmptyList
     Primary_parens(_open, exp, _close) {
       return exp.analyze();
     },
-    // Literal     =  null
-    //             |  true
-    //             |  false
-    //             |  numberlit
-    //             |  stringlit
     Var_subscript(id, _open, exp, _close) {
       const variable = id.analyze();
       const index = exp.analyze();
@@ -205,43 +197,31 @@ export default function analyze(match) {
       checkType(index, "number", exp);
       return core.subscript(variable, index);
     },
-    //  Var        =  Var "." id                 -- property
-    //             |  Call
-    //             |  id
-
+    Var_property(variable, _dot, id) {
+      const prop = id.analyze();
+      checkType(variable, "list", variable);
+      return core.property(variable, prop);
+    },
     NewList(_new, _list, _open, args, _close) {
       return core.newList(args.analyze());
     },
     EmptyList(_new, _list, _open, _close) {
       return core.emptyList();
     },
-    // Call        =  id "(" Args ")"
+    Call(id, _open, expressions, _close) {
+      const callee = id.analyze();
+      const args = expressions.analyze();
+      return core.call(callee, args);
+    },
     Args(expressions) {
       return expressions.asIteration().children.map((e) => e.analyze());
     },
-    // boolean     =  "truth_value" ~idchar
-    // break       =  "stop_loop" ~idchar
-    // else        =  "else" ~idchar
     false(_) {
       return false;
     },
-    // for         =  "for" ~idchar
-    // if          =  "if" ~idchar
-    // number      =  "number" ~idchar
-    // new         =  "new" ~idchar
-    // null        =  "no_value" ~idchar
-    // print       =  "print" ~idchar
-    // return      =  "return" ~idchar
-    // string      =  "text" ~idchar
     true(_) {
       return true;
     },
-    // void        =  "void" ~idchar
-    // while       =  "loop_while" ~idchar
-    // function    =  "reusable_code" ~idchar
-    // list        =  "list" ~idchar
-    // or          =  "or" ~idchar
-    // and         =  "and" ~idchar
     id(_first, _rest) {
       const entity = context.lookup(this.sourceString);
       checkDeclared(entity, this);

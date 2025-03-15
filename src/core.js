@@ -5,9 +5,6 @@ export function program(statements) {
   };
 }
 
-//   Stmt        =  newline			     	-- emptyLine
-//               |  Dec newline                -- declaration
-
 export function assignmentStatement(source, target) {
   return {
     kind: "assignmentStatement",
@@ -16,7 +13,12 @@ export function assignmentStatement(source, target) {
   };
 }
 
-//               |  Call newline               -- call
+export function callStatement(call) {
+  return {
+    kind: "callStatement",
+    call,
+  };
+}
 
 export function breakStatement() {
   return {
@@ -24,7 +26,12 @@ export function breakStatement() {
   };
 }
 
-//               |  return Exp? newline        -- return
+export function returnStatement(expression) {
+  return {
+    kind: "returnStatement",
+    expression,
+  };
+}
 
 export function printStatement(args) {
   return {
@@ -43,10 +50,13 @@ export function whileStatement(test, body) {
   };
 }
 
-//   Assignment  =  Var "is" Exp
-//   Dec         =  VarDec | FunDec
-
-//   Type        =  boolean | string | number
+export function assignment(target, source) {
+  return {
+    kind: "assignment",
+    target,
+    source,
+  };
+}
 
 export function variableDeclaration(variable, initializer) {
   return {
@@ -63,9 +73,6 @@ export function functionDeclaration(func, body) {
     body,
   };
 }
-
-//   Params      =  ListOf<Param, ",">
-//   Param       =  Type id
 
 export function block(statements) {
   return {
@@ -93,17 +100,6 @@ export function unaryExpression(operator, operand, type) {
   };
 }
 
-//   Primary     =  Literal
-//               |  Var
-//               |  NewList
-//               |  EmptyList
-//               |  "(" Exp ")"                -- parens
-//   Literal     =  null
-//               |  true
-//               |  false
-//               |  numberlit
-//               |  stringlit
-
 export function subscript(variable, subscript) {
   return {
     kind: "subscript",
@@ -111,9 +107,14 @@ export function subscript(variable, subscript) {
     subscript,
   };
 }
-//  Var          =  Var "." id                 -- property
-//               |  Call
-//               |  id
+
+export function property(variable, id) {
+  return {
+    kind: "property",
+    variable,
+    id,
+  };
+}
 
 export function newList(args) {
   return {
@@ -128,25 +129,13 @@ export function emptyList() {
   };
 }
 
-//   Call        =  id "(" Args ")"
-//   Args        =  ListOf<Exp, ",">
-
-//   boolean     =  "truth_value" ~idchar
-//   break       =  "stop_loop" ~idchar
-//   else        =  "else" ~idchar
-//   false       =  "false" ~idchar
-//   for         =  "for" ~idchar
-//   if          =  "if" ~idchar
-//   number      =  "number" ~idchar
-//   new         =  "new" ~idchar
-//   null        =  "no_value" ~idchar
-//   print       =  "print" ~idchar
-//   return      =  "return" ~idchar
-//   string      =  "text" ~idchar
-//   true        =  "true" ~idchar
-//   void        =  "void" ~idchar
-//   while       =  "loop_while" ~idchar
-//   function    =  "reusable_code" ~idchar
+export function call(callee, args) {
+  return {
+    kind: "call",
+    callee,
+    args,
+  };
+}
 
 export function funct(id, params, type, block) {
   return {
@@ -158,31 +147,11 @@ export function funct(id, params, type, block) {
   };
 }
 
-//   list        =  "list" ~idchar
-//   or          =  "or" ~idchar
-//   and         =  "and" ~idchar
-
-//   keyword     =  boolean | if | break | else | number | for | new
-//               |  return | null | while | true | string | function
-//               |  void | false | print | or | and | list
-
-//   id          =  ~keyword letter idchar*
-//   idchar      =  "_" | alnum
-//   numberlit   =  digit+ "."? digit* (("E"|"e") ("+"|"-")? digit+)?
-//   stringlit   =  "\"" (~"\"" any)* "\""
-
-//   addop       =  "+" | "-"
-//   relop       =  "<=?" | "<?" | "=?" | "!=?" | ">=?" | ">?"
-//   mulop       =  "*" | "/" | "modulus"
-
 export function newline() {
   return {
     kind: "newline",
   };
 }
-
-//   space      :=  " " | "\t" | comment
-//   comment     =  "//" (~"\n" any)*
 
 export function variable(name, type, mutable) {
   return {
