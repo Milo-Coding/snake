@@ -41,11 +41,6 @@ export default function generate(program) {
     returnStatement(s) {
       output.push(`return ${gen(s.expression)};`);
     },
-    variableDeclaration(d) {
-      // We don't care about const vs. let in the generated code! The analyzer has
-      // already checked that we never updated a const, so let is always fine.
-      output.push(`let ${gen(d.variable)} = ${gen(d.initializer)};`);
-    },
     functionDeclaration(d) {
       output.push(
         `function ${gen(d.fun)}(${d.fun.params.map(gen).join(", ")}) {`
@@ -83,7 +78,7 @@ export default function generate(program) {
       return `${gen(a.target)} = ${gen(a.source)}`;
     },
     variableDeclaration(v) {
-      return `${gen(v.variable)} = ${gen(v.initializer)}`;
+      output.push(`let ${gen(v.variable)} = ${gen(v.initializer)};`);
     },
     functionDeclaration(f) {
       return `function ${gen(f.fun)}(${f.fun.params
@@ -96,8 +91,8 @@ export default function generate(program) {
     binaryExpression(e) {
       const op =
         {
-          or: "||",
-          and: "&&",
+          "or": "||",
+          "and": "&&",
           "=?": "===",
           "!=?": "!==",
           "<=?": "<=",
@@ -111,45 +106,24 @@ export default function generate(program) {
       const operand = gen(e.operand);
       return `${e.op}(${operand})`;
     },
-    // repeatStatement(s) {
-    //   // JS can only repeat n times if you give it a counter variable!
-    //   const i = targetName({ name: "i" })
-    //   output.push(`for (let ${i} = 0; ${i} < ${gen(s.count)}; ${i}++) {`)
-    //   s.body.forEach(gen)
-    //   output.push("}")
-    // },
-    // ForRangeStatement(s) {
-    //   const i = targetName(s.iterator)
-    //   const op = s.op === "..." ? "<=" : "<"
-    //   output.push(`for (let ${i} = ${gen(s.low)}; ${i} ${op} ${gen(s.high)}; ${i}++) {`)
-    //   s.body.forEach(gen)
-    //   output.push("}")
-    // },
-    // ForStatement(s) {
-    //   output.push(`for (let ${gen(s.iterator)} of ${gen(s.collection)}) {`)
-    //   s.body.forEach(gen)
-    //   output.push("}")
-    // },
-    // Conditional(e) {
-    //   return `((${gen(e.test)}) ? (${gen(e.consequent)}) : (${gen(e.alternate)}))`
-    // },
-    // SubscriptExpression(e) {
-    //   return `${gen(e.array)}[${gen(e.index)}]`
-    // },
-    // ArrayExpression(e) {
-    //   return `[${e.elements.map(gen).join(",")}]`
-    // },
-    // EmptyArray(e) {
-    //   return "[]"
-    // },
-    // FunctionCall(c) {
-    //   const targetCode = `${gen(c.callee)}(${c.args.map(gen).join(", ")})`
-    //   // Calls in expressions vs in statements are handled differently
-    //   if (c.callee.type.returnType !== voidType) {
-    //     return targetCode
-    //   }
-    //   output.push(`${targetCode};`)
-    // },
+    subscript(s) {
+      return `${gen(s.array)}[${gen(s.index)}]`;
+    },
+    property(p) {
+      return `${gen(p.object)}.${gen(p.property)}`;
+    },
+    newList(l) {
+      return `[${l.elements.map(gen).join(", ")}]`;
+    },
+    emptyList(l) {
+      return "[]";
+    },
+    call(c) {
+      return `${gen(c.func)}(${c.args.map(gen).join(", ")})`;
+    },
+    funct(f) {
+      return `${gen(f.name)}(${f.params.map(gen).join(", ")})`;
+    },
   };
 
   gen(program);
