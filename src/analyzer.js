@@ -99,7 +99,7 @@ export default function analyze(match) {
       const initializer = exp ? exp.analyze() : null;
       const variable = core.variable(id.sourceString, type.sourceString, true);
       context.add(id.sourceString, variable);
-      return core.variableDeclaration(variable, initializer);
+      return core.variableDeclaration(variable, initializer[0]);
     },
     FunDec(_function, id, _open, params, _close, _outputs, type, block) {
       checkNotDeclared(id.sourceString, id);
