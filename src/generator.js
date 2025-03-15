@@ -29,6 +29,18 @@ export default function generate(program) {
     program(p) {
       p.statements.forEach(gen);
     },
+    assignmentStatement(s) {
+      output.push(`${gen(s.assign)};`);
+    },
+    callStatement(s) {
+      output.push(`${gen(s.call)};`);
+    },
+    breakStatement(b) {
+      output.push("break;");
+    },
+    returnStatement(s) {
+      output.push(`return ${gen(s.expression)};`);
+    },
     variableDeclaration(d) {
       // We don't care about const vs. let in the generated code! The analyzer has
       // already checked that we never updated a const, so let is always fine.
@@ -47,18 +59,9 @@ export default function generate(program) {
     funct(f) {
       return targetName(f);
     },
-    assignmentStatement(s) {
-      output.push(`${gen(s.target)} = ${gen(s.source)};`);
+    printStatement(s) {
+      output.push(`console.log(${s.args.map(gen).join(", ")});`);
     },
-    breakStatement(s) {
-      output.push("break;");
-    },
-    // returnStatement(s) {
-    //   output.push(`return ${gen(s.expression)};`)
-    // },
-    // shortReturnStatement(s) {
-    //   output.push("return;")
-    // },
     // ifStatement(s) {
     //   output.push(`if (${gen(s.test)}) {`)
     //   s.consequent.forEach(gen)
@@ -71,15 +74,42 @@ export default function generate(program) {
     //     output.push("}")
     //   }
     // },
-    // shortIfStatement(s) {
-    //   output.push(`if (${gen(s.test)}) {`)
-    //   s.consequent.forEach(gen)
-    //   output.push("}")
-    // },
     whileStatement(s) {
       output.push(`while (${gen(s.test)}) {`);
       s.body.forEach(gen);
       output.push("}");
+    },
+    assignment(a) {
+      return `${gen(a.target)} = ${gen(a.source)}`;
+    },
+    variableDeclaration(v) {
+      return `${gen(v.variable)} = ${gen(v.initializer)}`;
+    },
+    functionDeclaration(f) {
+      return `function ${gen(f.fun)}(${f.fun.params
+        .map(gen)
+        .join(", ")}) {${f.fun.body.map(gen)}}`;
+    },
+    block(b) {
+      b.statements.forEach(gen);
+    },
+    binaryExpression(e) {
+      const op =
+        {
+          or: "||",
+          and: "&&",
+          "=?": "===",
+          "!=?": "!==",
+          "<=?": "<=",
+          "<?": "<",
+          ">=?": ">=",
+          ">?": ">",
+        }[e.op] ?? e.op;
+      return `(${gen(e.left)} ${op} ${gen(e.right)})`;
+    },
+    unaryExpression(e) {
+      const operand = gen(e.operand);
+      return `${e.op}(${operand})`;
     },
     // repeatStatement(s) {
     //   // JS can only repeat n times if you give it a counter variable!
@@ -103,24 +133,6 @@ export default function generate(program) {
     // Conditional(e) {
     //   return `((${gen(e.test)}) ? (${gen(e.consequent)}) : (${gen(e.alternate)}))`
     // },
-    binaryExpression(e) {
-      const op =
-        {
-          or: "||",
-          and: "&&",
-          "=?": "===",
-          "!=?": "!==",
-          "<=?": "<=",
-          "<?": "<",
-          ">=?": ">=",
-          ">?": ">",
-        }[e.op] ?? e.op;
-      return `(${gen(e.left)} ${op} ${gen(e.right)})`;
-    },
-    unaryExpression(e) {
-      const operand = gen(e.operand);
-      return `${e.op}(${operand})`;
-    },
     // SubscriptExpression(e) {
     //   return `${gen(e.array)}[${gen(e.index)}]`
     // },
@@ -138,9 +150,6 @@ export default function generate(program) {
     //   }
     //   output.push(`${targetCode};`)
     // },
-    printStatement(s) {
-      output.push(`console.log(${s.args.map(gen).join(", ")});`);
-    },
   };
 
   gen(program);

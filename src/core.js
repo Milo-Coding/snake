@@ -5,11 +5,10 @@ export function program(statements) {
   };
 }
 
-export function assignmentStatement(source, target) {
+export function assignmentStatement(assign) {
   return {
     kind: "assignmentStatement",
-    source,
-    target,
+    assign,
   };
 }
 
@@ -81,20 +80,20 @@ export function block(statements) {
   };
 }
 
-export function binaryExpression(left, right, operator, type) {
+export function binaryExpression(left, right, op, type) {
   return {
     kind: "binaryExpression",
     left,
     right,
-    operator,
+    op,
     type,
   };
 }
 
-export function unaryExpression(operator, operand, type) {
+export function unaryExpression(op, operand, type) {
   return {
     kind: "unaryExpression",
-    operator,
+    op,
     operand,
     type,
   };

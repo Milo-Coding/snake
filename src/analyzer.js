@@ -67,7 +67,7 @@ export default function analyze(match) {
       return dec.analyze();
     },
     Stmt_assignment(assignment, _newline) {
-      return assignment.analyze();
+      return core.assignmentStatement(assignment.analyze());
     },
     Stmt_call(call, _newline) {
       return core.callStatement(call.analyze());
@@ -84,7 +84,7 @@ export default function analyze(match) {
     //             |  if Exp Block (else if Exp Block)* (else Block)?  -- if
     Stmt_while(_while, exp, block, _newline) {
       const test = exp.analyze();
-      checkType(test, "boolean", exp);
+      checkType(test, "truth_value", exp);
       return core.whileStatement(test, block.analyze());
     },
     Assignment(varNode, _is, exp) {
@@ -130,16 +130,16 @@ export default function analyze(match) {
     Exp_or(left, _or, right) {
       const leftValue = left.analyze();
       const rightValue = right.analyze();
-      checkType(leftValue, "boolean", left);
-      checkType(rightValue, "boolean", right);
-      return core.binaryExpression(leftValue, rightValue, "||", "boolean");
+      checkType(leftValue, "truth_value", left);
+      checkType(rightValue, "truth_value", right);
+      return core.binaryExpression(leftValue, rightValue, "||", "truth_value");
     },
     Exp_and(left, _and, right) {
       const leftValue = left.analyze();
       const rightValue = right.analyze();
-      checkType(leftValue, "boolean", left);
-      checkType(rightValue, "boolean", right);
-      return core.binaryExpression(leftValue, rightValue, "&&", "boolean");
+      checkType(leftValue, "truth_value", left);
+      checkType(rightValue, "truth_value", right);
+      return core.binaryExpression(leftValue, rightValue, "&&", "truth_value");
     },
     Exp_relop(left, relop, right) {
       const leftValue = left.analyze();
@@ -154,7 +154,7 @@ export default function analyze(match) {
         leftValue,
         rightValue,
         relop.sourceString,
-        "boolean"
+        "truth_value"
       );
     },
     Condition_binary(exp, addop, term) {
