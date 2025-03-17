@@ -43,6 +43,7 @@ Functions are another way to create reusable code in snake.
 
 #### Other notable features
 
+Snake is a statically typed language.
 All snake files (.sn) must end with a newline: the way God intended.
 
 ## Types
