@@ -65,7 +65,7 @@ snake {
   return      =  "return" ~idchar
   string      =  "text" ~idchar
   true        =  "true" ~idchar
-  void        =  "void" ~idchar
+  void        =  "nothing" ~idchar
   while       =  "loop_while" ~idchar
   function    =  "reusable_code" ~idchar
   list        =  "list" ~idchar

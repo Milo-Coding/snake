@@ -1,6 +1,0 @@
-Update readme/examples to match current snake grammar/syntax
-
-Things to note in readme:
-- Variables must be intilized when declared
-- Removing input statements
-- .sn files must end in an empty line
