@@ -39,7 +39,14 @@ export function printStatement(args) {
   };
 }
 
-//               |  if Exp Block (else if Exp Block)* (else Block)?  -- if
+export function ifStatement(test, consequent, alternate) {
+  return {
+    kind: "ifStatement",
+    test,
+    consequent,
+    alternate,
+  };
+}
 
 export function whileStatement(test, body) {
   return {

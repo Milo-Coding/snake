@@ -81,7 +81,45 @@ export default function analyze(match) {
     Stmt_print(_print, args, _newline) {
       return core.printStatement(args.analyze());
     },
-    //             |  if Exp Block (else if Exp Block)* (else Block)?  -- if
+    /*
+    IfStmt_long(_if, exp, block1, _else, block2) {
+      const test = exp.rep()
+      mustHaveBooleanType(test, { at: exp })
+      context = context.newChildContext()
+      const consequent = block1.rep()
+      context = context.parent
+      context = context.newChildContext()
+      const alternate = block2.rep()
+      context = context.parent
+      return core.ifStatement(test, consequent, alternate)
+    },
+
+    IfStmt_elsif(_if, exp, block, _else, trailingIfStatement) {
+      const test = exp.rep()
+      mustHaveBooleanType(test, { at: exp })
+      context = context.newChildContext()
+      const consequent = block.rep()
+      context = context.parent
+      const alternate = trailingIfStatement.rep()
+      return core.ifStatement(test, consequent, alternate)
+    },
+
+    IfStmt_short(_if, exp, block) {
+      const test = exp.rep()
+      mustHaveBooleanType(test, { at: exp })
+      context = context.newChildContext()
+      const consequent = block.rep()
+      context = context.parent
+      return core.shortIfStatement(test, consequent)
+    },
+    */
+    Stmt_if(_if, exp, block, _elifs, _else, _block) {
+      const test = exp.analyze();
+      checkType(test, "truth_value", exp);
+      const consequent = block.analyze();
+      const alternate = _block ? _block.analyze() : null;
+      return core.ifStatement(test, consequent, alternate);
+    },
     Stmt_while(_while, exp, block, _newline) {
       const test = exp.analyze();
       checkType(test, "truth_value", exp);
