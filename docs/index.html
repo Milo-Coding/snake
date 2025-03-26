@@ -16,7 +16,6 @@
         <h2>Welcome to Snake</h2>
         <p>Snake is a python-like language designed for readability...</p>
 
-        <!-- Removed the previous link to README.md and added README content below -->
         <h2>snake</h2>
         <img src="snake-logo.png" alt="snake logo" />
         <p>
@@ -137,7 +136,26 @@
               <td>b = "Hello World!"</td>
               <td>text b is "Hello World!"</td>
             </tr>
-            <!-- ...remaining rows... -->
+            <tr>
+              <td>let c = 1.7;</td>
+              <td>c = 1.7</td>
+              <td>number c is 1.7</td>
+            </tr>
+            <tr>
+              <td>let d = true;</td>
+              <td>d = True</td>
+              <td>truth_value d is true</td>
+            </tr>
+            <tr>
+              <td>let e = false;</td>
+              <td>e = False</td>
+              <td>truth_value e is false</td>
+            </tr>
+            <tr>
+              <td>const f = “Constant”;</td>
+              <td>f = "Constant"</td>
+              <td>text f is "Constant"</td>
+            </tr>
           </tbody>
         </table>
 
@@ -281,17 +299,149 @@
         </table>
 
         <h3>Examples</h3>
+
         <h4>Function Definition and Call</h4>
-        <!-- ...example snippet... -->
+        <table>
+          <thead>
+            <tr>
+              <th>JavaScript</th>
+              <th>Python</th>
+              <th>snake</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                function greet() {<br />
+                &nbsp;&nbsp;console.log("Hi");<br />
+                }<br />
+                greet();
+              </td>
+              <td>
+                def greet():<br />
+                &nbsp;&nbsp;print("Hi")<br />
+                greet()
+              </td>
+              <td>
+                reusable_code greet() outputs nothing{<br />
+                &nbsp;&nbsp;print("Hi")<br />
+                }<br />
+                greet()
+              </td>
+            </tr>
+          </tbody>
+        </table>
 
         <h4>Nested Loops</h4>
-        <!-- ...example snippet... -->
+        <table>
+          <thead>
+            <tr>
+              <th>JavaScript</th>
+              <th>Python</th>
+              <th>snake</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                let i = 0;<br />
+                while (i &lt; 3) {<br />
+                &nbsp;&nbsp;let j = 0;<br />
+                &nbsp;&nbsp;while (j &lt; 3) {<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;console.log(i, j);<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;j++;<br />
+                &nbsp;&nbsp;}<br />
+                &nbsp;&nbsp;i++;<br />
+                }
+              </td>
+              <td>
+                i = 0<br />
+                while i &lt; 3:<br />
+                &nbsp;&nbsp;j = 0<br />
+                &nbsp;&nbsp;while j &lt; 3:<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;print(i, j)<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;j += 1<br />
+                &nbsp;&nbsp;i += 1
+              </td>
+              <td>
+                i is 0<br />
+                loop_while i &lt;? 3 {<br />
+                &nbsp;&nbsp;j is 0<br />
+                &nbsp;&nbsp;loop_while j &lt;? 3 {<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;print(i, j)<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;j is j + 1<br />
+                &nbsp;&nbsp;}<br />
+                &nbsp;&nbsp;i is i + 1<br />
+                }
+              </td>
+            </tr>
+          </tbody>
+        </table>
 
         <h4>Recursion</h4>
-        <!-- ...example snippet... -->
+        <table>
+          <thead>
+            <tr>
+              <th>JavaScript</th>
+              <th>Python</th>
+              <th>snake</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                function factorial(n) {<br />
+                &nbsp;&nbsp;if (n &lt;= 1) return 1;<br />
+                &nbsp;&nbsp;return n * factorial(n - 1);<br />
+                }
+              </td>
+              <td>
+                def factorial(n):<br />
+                &nbsp;&nbsp;if n &lt;= 1:<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;return 1<br />
+                &nbsp;&nbsp;return n * factorial(n - 1)
+              </td>
+              <td>
+                reusable_code factorial(number n) outputs number {<br />
+                &nbsp;&nbsp;if n &lt;=? 1 {<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;output 1<br />
+                &nbsp;&nbsp;}<br />
+                &nbsp;&nbsp;output n * factorial(n - 1)<br />
+                }
+              </td>
+            </tr>
+          </tbody>
+        </table>
 
         <h4>Lists and Dictionaries</h4>
-        <!-- ...example snippet... -->
+        <table>
+          <thead>
+            <tr>
+              <th>JavaScript</th>
+              <th>Python</th>
+              <th>snake</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                let my_list = [1, 2, 3];<br />
+                let dict = {a: 1, b: 2};<br />
+                console.log(my_list, dict);
+              </td>
+              <td>
+                my_list = [1, 2, 3]<br />
+                dict = {'a': 1, 'b': 2}<br />
+                print(my_list, dict)
+              </td>
+              <td>
+                list my_list is [1, 2, 3]<br />
+                name_value_pair dict is {"a": 1, "b": 2}<br />
+                print(my_list, dict)
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </section>
     </main>
 
