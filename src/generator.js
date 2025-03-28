@@ -1,17 +1,6 @@
-// The code generator exports a single function, generate(program), which
-// accepts a program representation and returns the JavaScript translation
-// as a string.
-
 export default function generate(program) {
-  // When generating code for statements, we'll accumulate the lines of
-  // the target code here. When we finish generating, we'll join the lines
-  // with newlines and return the result.
   const output = [];
 
-  // Variable and function names in JS will be suffixed with _1, _2, _3,
-  // etc. This is because "switch", for example, is a legal name in snake,
-  // but not in JS. So, the snake variable "switch" must become something
-  // like "switch_1". We handle this by mapping each name to its suffix.
   const targetName = ((mapping) => {
     return (entity) => {
       if (!mapping.has(entity)) {
@@ -24,10 +13,10 @@ export default function generate(program) {
   const gen = (node) => generators?.[node?.kind]?.(node) ?? node;
 
   const generators = {
-    // Key idea: when generating an expression, just return the JS string; when
-    // generating a statement, write lines of translated JS to the output array.
     program(p) {
-      p.statements.forEach(gen);
+      // Ensure statements is always an array
+      const statements = Array.isArray(p.statements) ? p.statements : [];
+      statements.forEach(gen);
     },
     assignmentStatement(s) {
       output.push(`${gen(s.assign)};`);
@@ -45,7 +34,8 @@ export default function generate(program) {
       output.push(
         `function ${gen(d.fun)}(${d.fun.params.map(gen).join(", ")}) {`
       );
-      d.fun.body.forEach(gen);
+      const body = Array.isArray(d.fun.body) ? d.fun.body : [d.fun.body];
+      body.forEach(gen);
       output.push("}");
     },
     variable(v) {
@@ -55,23 +45,32 @@ export default function generate(program) {
       return targetName(f);
     },
     printStatement(s) {
-      output.push(`console.log(${s.args.map(gen).join(", ")});`);
+      const args = Array.isArray(s.args) ? s.args : [s.args];
+      output.push(`console.log(${args.map(gen).join(", ")});`);
     },
-    // ifStatement(s) {
-    //   output.push(`if (${gen(s.test)}) {`)
-    //   s.consequent.forEach(gen)
-    //   if (s.alternate?.kind?.endsWith?.("IfStatement")) {
-    //     output.push("} else")
-    //     gen(s.alternate)
-    //   } else {
-    //     output.push("} else {")
-    //     s.alternate.forEach(gen)
-    //     output.push("}")
-    //   }
-    // },
+    ifStatement(s) {
+      output.push(`if (${gen(s.test)}) {`);
+      
+      const consequent = Array.isArray(s.consequent) ? s.consequent : [s.consequent];
+      consequent.forEach(gen);
+      
+      output.push("}");
+      
+      if (s.alternate) {
+        output.push("else {");
+        const alternate = Array.isArray(s.alternate) ? s.alternate : [s.alternate];
+        alternate.forEach(gen);
+        output.push("}");
+      }
+    },
     whileStatement(s) {
       output.push(`while (${gen(s.test)}) {`);
-      s.body.forEach(gen);
+      
+      const body = s.body.kind === 'block' ? s.body.statements : 
+                   Array.isArray(s.body) ? s.body : [s.body];
+      
+      body.forEach(gen);
+      
       output.push("}");
     },
     assignment(a) {
@@ -80,26 +79,22 @@ export default function generate(program) {
     variableDeclaration(v) {
       output.push(`let ${gen(v.variable)} = ${gen(v.initializer)};`);
     },
-    functionDeclaration(f) {
-      return `function ${gen(f.fun)}(${f.fun.params
-        .map(gen)
-        .join(", ")}) {${f.fun.body.map(gen)}}`;
-    },
     block(b) {
-      b.statements.forEach(gen);
+      const statements = Array.isArray(b.statements) ? b.statements : [b.statements];
+      statements.forEach(gen);
     },
     binaryExpression(e) {
-      const op =
-        {
-          "or": "||",
-          "and": "&&",
-          "=?": "===",
-          "!=?": "!==",
-          "<=?": "<=",
-          "<?": "<",
-          ">=?": ">=",
-          ">?": ">",
-        }[e.op] ?? e.op;
+      const op = {
+        "or": "||",
+        "and": "&&",
+        "=?": "===",
+        "!=?": "!==",
+        "<=?": "<=",
+        "<?": "<",
+        ">=?": ">=",
+        ">?": ">",
+        "modulus": "%"
+      }[e.op] ?? e.op;
       return `(${gen(e.left)} ${op} ${gen(e.right)})`;
     },
     unaryExpression(e) {
@@ -124,6 +119,9 @@ export default function generate(program) {
     funct(f) {
       return `${gen(f.name)}(${f.params.map(gen).join(", ")})`;
     },
+    newline() {
+      return '';
+    }
   };
 
   gen(program);

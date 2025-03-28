@@ -7,7 +7,7 @@ snake {
               |  break newline              -- break
               |  return Exp? newline        -- return
               |  print Args newline         -- print
-              |  if Exp Block (else if Exp Block)* (else Block)?  -- if
+              |  if Exp Block (else Block)? newline  -- if
               |  while Exp Block newline    -- while
   
   Assignment  =  Var is Exp
@@ -54,7 +54,7 @@ snake {
 
   boolean     =  "truth_value" ~idchar
   break       =  "stop_loop" ~idchar
-  else        =  "else" ~idchar
+  else        =  "if_not" ~idchar
   false       =  "false" ~idchar
   for         =  "for" ~idchar
   if          =  "if" ~idchar
@@ -73,7 +73,7 @@ snake {
   and         =  "and" ~idchar
   is          =  "is" ~idchar
 
-  keyword     =  boolean | if | break | else | number | for | new
+  keyword     =  boolean | else | if | break | number | for | new
               |  return | null | while | true | string | function
               |  void | false | print | or | and | list | is
               

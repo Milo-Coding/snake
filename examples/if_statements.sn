@@ -1,0 +1,10 @@
+if true {
+    print 1
+} if_not {
+    print 2
+}
+
+truth_value x is false
+if x {
+    print x
+}
