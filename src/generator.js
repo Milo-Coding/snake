@@ -14,7 +14,6 @@ export default function generate(program) {
 
   const generators = {
     program(p) {
-      // Ensure statements is always an array
       const statements = Array.isArray(p.statements) ? p.statements : [];
       statements.forEach(gen);
     },
