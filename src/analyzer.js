@@ -4,9 +4,10 @@ export default function analyze(match) {
   const grammar = match.matcher.grammar;
 
   class Context {
-    constructor(parent = null) {
+    constructor(parent = null, contextType = 'global') {
       this.locals = new Map();
       this.parent = parent;
+      this.contextType = contextType; // 'global', 'function', 'loop'
     }
     add(name, entity) {
       this.locals.set(name, entity);
@@ -16,6 +17,26 @@ export default function analyze(match) {
     }
     lookup(name) {
       return this.locals.get(name) ?? (this.parent && this.parent.lookup(name));
+    }
+    isValidContext(statementType) {
+      switch (statementType) {
+        case 'break':
+          return this.findParentContextOfType('loop') !== null;
+        case 'return':
+          return this.findParentContextOfType('function') !== null;
+        default:
+          return true;
+      }
+    }
+    findParentContextOfType(type) {
+      let currentContext = this;
+      while (currentContext) {
+        if (currentContext.contextType === type) {
+          return currentContext;
+        }
+        currentContext = currentContext.parent;
+      }
+      return null;
     }
   }
 
@@ -73,10 +94,31 @@ export default function analyze(match) {
       return core.callStatement(call.analyze());
     },
     Stmt_break(_break, _newline) {
+      check(
+        context.isValidContext('break'), 
+        "Break statement must be used inside a loop", 
+        _break
+      );
       return core.breakStatement();
     },
     Stmt_return(_return, exp, _newline) {
-      return core.returnStatement(exp.analyze());
+      const functionContext = context.findParentContextOfType('function');
+      check(
+        functionContext, 
+        "Return statement must be used inside a function", 
+        _return
+      );
+
+      const returnedValue = exp.analyze();
+      if (functionContext.returnType) {
+        check(
+          returnedValue.type === functionContext.returnType,
+          `Expected return type ${functionContext.returnType}, but got ${returnedValue.type}`,
+          exp
+        );
+      }
+
+      return core.returnStatement(returnedValue);
     },
     Stmt_print(_print, args, _newline) {
       return core.printStatement(args.analyze());
@@ -89,9 +131,12 @@ export default function analyze(match) {
       return core.ifStatement(test, consequent, alternate);
     },
     Stmt_while(_while, exp, block, _newline) {
+      context = new Context(context, 'loop');
       const test = exp.analyze();
       checkType(test, "truth_value", exp);
-      return core.whileStatement(test, block.analyze());
+      const body = block.analyze();
+      context = context.parent;
+      return core.whileStatement(test, body);
     },
     Assignment(varNode, _is, exp) {
       const variable = varNode.analyze();
@@ -109,7 +154,10 @@ export default function analyze(match) {
     },
     FunDec(_function, id, _open, params, _close, _outputs, type, block) {
       checkNotDeclared(id.sourceString, id);
-      context = new Context(context);
+      
+      context = new Context(context, 'function');
+      context.returnType = type.sourceString;
+
       const parameters = params.analyze();
       const body = block.analyze();
       context = context.parent;
