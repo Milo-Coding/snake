@@ -81,7 +81,7 @@ if t {
     deepEqual(typeof result, "object");
   });
 
-  // parameters not yet implemented
+  // output not yet implemented
   //   it('compiles function usage to "optimized"', () => {
   //     const prog = `reusable_code sum(x, y) outputs number{
   //   x is x + y
@@ -117,14 +117,14 @@ print(n)
     deepEqual(js.includes("let n_"), true);
   });
 
-  // parameters not yet implemented
-  //   it('compiles function definition to "js"', () => {
-  //     const prog = `reusable_code greet() outputs nothing{
-  //   print("Hello")
-  // }\n`;
-  //     const js = compile(prog, "js");
-  //     deepEqual(js.includes("function greet_"), true);
-  //   });
+    // TODO: add target names for functions
+    it('compiles function definition to "js"', () => {
+      const prog = `reusable_code greet() outputs nothing{
+    print("Hello")
+  }\n`;
+      const js = compile(prog, "js");
+      deepEqual(js.includes("function greet"), true);
+    });
 
   it('compiles break statement in a loop to "js"', () => {
     const prog = `
@@ -146,14 +146,14 @@ loop_while x <? 10 {
     deepEqual(!!error, true);
   });
 
-  // parameters not yet implemented
-  //   it('compiles a program with function return to "parsed"', () => {
-  //     const prog = `
-  // reusable_code double(x) outputs number {
-  //   output x * 2
-  // }\n`;
-  //     deepEqual(compile(prog, "parsed"), "Syntax is ok");
-  //   });
+  // output not yet implemented
+  //     it('compiles a program with function return to "parsed"', () => {
+  //       const prog = `
+  //   reusable_code double(x) outputs number {
+  //     output x * 2
+  //   }\n`;
+  //       deepEqual(compile(prog, "parsed"), "Syntax is ok");
+  //     });
 
   it('compiles code with type mismatch to "analyzed" but might throw', () => {
     const prog = `number x is true\n`;
