@@ -5,3 +5,8 @@ reusable_code hello(text name, number times) outputs text {
         i is i - 1
     }
 }
+
+reusable_code testFunc() outputs nothing {
+  print("Inside testFunc")
+}
+testFunc()

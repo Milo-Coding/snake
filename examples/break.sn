@@ -1,0 +1,4 @@
+number x is 0
+loop_while x <? 10 {
+  stop_loop
+}
