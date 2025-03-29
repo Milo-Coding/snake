@@ -137,4 +137,4 @@ Break must be called in a loop
 
 | JavaScript                                                                             | Python                                                                    | snake                                                                                            |
 | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| `let my_list = [1, 2, 3];`<br>`let dict = {a: 1, b: 2};`<br>`console.log(list, dict);` | `my_list = [1, 2, 3]`<br>`dict = {'a': 1, 'b': 2}`<br>`print(list, dict)` | `list my_list is [1, 2, 3]`<br>`name_value_pair dict is {"a": 1, "b": 2}`<br>`print(list, dict)` |
+| `let my_list = [1, 2, 3];`<br>`let dict = {a: 1, b: 2};`<br>`console.log(list, dict);` | `my_list = [1, 2, 3]`<br>`dict = {'a': 1, 'b': 2}`<br>`print(list, dict)` | `list my_list is new list [1, 2, 3]`<br>`name_value_pair dict is {"a": 1, "b": 2}`<br>`print(list, dict)` |
