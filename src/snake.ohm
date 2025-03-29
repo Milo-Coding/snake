@@ -15,7 +15,8 @@ snake {
 
   Type        =  boolean | string | number | list
               
-  VarDec      =  Type id (is Exp)?
+  VarDec      =  Type id Initializer?
+  Initializer =  is Exp
   FunDec      =  function id "(" Params ")" "outputs" (void | Type) Block
   Params      =  ListOf<Param, ",">
   Param       =  Type id

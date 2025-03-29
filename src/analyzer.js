@@ -4,7 +4,7 @@ export default function analyze(match) {
   const grammar = match.matcher.grammar;
 
   class Context {
-    constructor(parent = null, contextType = 'global') {
+    constructor(parent = null, contextType = "global") {
       this.locals = new Map();
       this.parent = parent;
       this.contextType = contextType; // 'global', 'function', 'loop'
@@ -20,10 +20,10 @@ export default function analyze(match) {
     }
     isValidContext(statementType) {
       switch (statementType) {
-        case 'break':
-          return this.findParentContextOfType('loop') !== null;
-        case 'return':
-          return this.findParentContextOfType('function') !== null;
+        case "break":
+          return this.findParentContextOfType("loop") !== null;
+        case "return":
+          return this.findParentContextOfType("function") !== null;
         default:
           return true;
       }
@@ -95,17 +95,17 @@ export default function analyze(match) {
     },
     Stmt_break(_break, _newline) {
       check(
-        context.isValidContext('break'), 
-        "Break statement must be used inside a loop", 
+        context.isValidContext("break"),
+        "Break statement must be used inside a loop",
         _break
       );
       return core.breakStatement();
     },
     Stmt_return(_return, exp, _newline) {
-      const functionContext = context.findParentContextOfType('function');
+      const functionContext = context.findParentContextOfType("function");
       check(
-        functionContext, 
-        "Return statement must be used inside a function", 
+        functionContext,
+        "Return statement must be used inside a function",
         _return
       );
 
@@ -131,7 +131,7 @@ export default function analyze(match) {
       return core.ifStatement(test, consequent, alternate);
     },
     Stmt_while(_while, exp, block, _newline) {
-      context = new Context(context, 'loop');
+      context = new Context(context, "loop");
       const test = exp.analyze();
       checkType(test, "truth_value", exp);
       const body = block.analyze();
@@ -145,17 +145,25 @@ export default function analyze(match) {
       checkSameType(variable, source, exp);
       return core.assignment(source, variable);
     },
-    VarDec(type, id, _is, exp) {
+    VarDec(type, id, maybeInit) {
       checkNotDeclared(id.sourceString, id);
-      const initializer = exp ? exp.analyze() : null;
-      const variable = core.variable(id.sourceString, type.sourceString, true);
+      const variable = core.variable(id.sourceString, type.sourceString);
       context.add(id.sourceString, variable);
-      return core.variableDeclaration(variable, initializer[0]);
+      if (maybeInit.sourceString) {
+        const initializer = maybeInit.analyze()[0];
+        checkSameType(variable, initializer, id);
+        return core.variableDeclaration(variable, initializer);
+      }
+      return core.variableDeclaration(variable);
+    },
+    Initializer(_is, exp) {
+      const initializer = exp.analyze();
+      return initializer;
     },
     FunDec(_function, id, _open, params, _close, _outputs, type, block) {
       checkNotDeclared(id.sourceString, id);
-      
-      context = new Context(context, 'function');
+
+      context = new Context(context, "function");
       context.returnType = type.sourceString;
 
       const parameters = params.analyze();

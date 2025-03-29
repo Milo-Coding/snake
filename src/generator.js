@@ -30,11 +30,11 @@ export default function generate(program) {
       output.push(`return ${gen(s.expression)};`);
     },
     functionDeclaration(d) {
+      const { func, body } = d;
       output.push(
-        `function ${gen(d.fun)}(${d.fun.params.map(gen).join(", ")}) {`
+        `function ${gen(func.id)}(${func.params.map(gen).join(", ")}) {`
       );
-      const body = Array.isArray(d.fun.body) ? d.fun.body : [d.fun.body];
-      body.forEach(gen);
+      gen(body);
       output.push("}");
     },
     variable(v) {
@@ -49,27 +49,35 @@ export default function generate(program) {
     },
     ifStatement(s) {
       output.push(`if (${gen(s.test)}) {`);
-      
-      const consequent = Array.isArray(s.consequent) ? s.consequent : [s.consequent];
+
+      const consequent = Array.isArray(s.consequent)
+        ? s.consequent
+        : [s.consequent];
       consequent.forEach(gen);
-      
+
       output.push("}");
-      
+
       if (s.alternate) {
         output.push("else {");
-        const alternate = Array.isArray(s.alternate) ? s.alternate : [s.alternate];
+        const alternate = Array.isArray(s.alternate)
+          ? s.alternate
+          : [s.alternate];
         alternate.forEach(gen);
         output.push("}");
       }
     },
     whileStatement(s) {
       output.push(`while (${gen(s.test)}) {`);
-      
-      const body = s.body.kind === 'block' ? s.body.statements : 
-                   Array.isArray(s.body) ? s.body : [s.body];
-      
+
+      const body =
+        s.body.kind === "block"
+          ? s.body.statements
+          : Array.isArray(s.body)
+          ? s.body
+          : [s.body];
+
       body.forEach(gen);
-      
+
       output.push("}");
     },
     assignment(a) {
@@ -79,21 +87,24 @@ export default function generate(program) {
       output.push(`let ${gen(v.variable)} = ${gen(v.initializer)};`);
     },
     block(b) {
-      const statements = Array.isArray(b.statements) ? b.statements : [b.statements];
+      const statements = Array.isArray(b.statements)
+        ? b.statements
+        : [b.statements];
       statements.forEach(gen);
     },
     binaryExpression(e) {
-      const op = {
-        "or": "||",
-        "and": "&&",
-        "=?": "===",
-        "!=?": "!==",
-        "<=?": "<=",
-        "<?": "<",
-        ">=?": ">=",
-        ">?": ">",
-        "modulus": "%"
-      }[e.op] ?? e.op;
+      const op =
+        {
+          or: "||",
+          and: "&&",
+          "=?": "===",
+          "!=?": "!==",
+          "<=?": "<=",
+          "<?": "<",
+          ">=?": ">=",
+          ">?": ">",
+          modulus: "%",
+        }[e.op] ?? e.op;
       return `(${gen(e.left)} ${op} ${gen(e.right)})`;
     },
     unaryExpression(e) {
@@ -113,14 +124,14 @@ export default function generate(program) {
       return "[]";
     },
     call(c) {
-      return `${gen(c.func)}(${c.args.map(gen).join(", ")})`;
+      return `${gen(c.callee.id)}(${c.args.map(gen).join(", ")})`;
     },
     funct(f) {
       return `${gen(f.name)}(${f.params.map(gen).join(", ")})`;
     },
     newline() {
-      return '';
-    }
+      return "";
+    },
   };
 
   gen(program);

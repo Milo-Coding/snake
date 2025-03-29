@@ -21,7 +21,7 @@ export function callStatement(call) {
 
 export function breakStatement() {
   return {
-    kind: "break",
+    kind: "breakStatement",
   };
 }
 
@@ -145,7 +145,7 @@ export function call(callee, args) {
 
 export function funct(id, params, type, block) {
   return {
-    kind: "function",
+    kind: "funct",
     id,
     params,
     type,
