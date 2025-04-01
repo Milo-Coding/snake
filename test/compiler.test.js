@@ -1,15 +1,51 @@
 import { describe, it } from "node:test";
-import { deepEqual } from "node:assert/strict";
+import { deepEqual, ok } from "node:assert/strict";
+import parse from "../src/parser.js";
+import analyze from "../src/analyzer.js";
+import generate from "../src/generator.js";
 import compile from "../src/compiler.js";
 
-describe("Compiler", () => {
+describe("Full Stack Tests", () => {
   it('compiles valid code to "parsed" output', () => {
     const result = compile("print 1\n", "parsed");
     deepEqual(result, "Syntax is ok");
   });
+
+  it("covers empty and populated lists, multiple arguments, call usage", () => {
+    const ast = parse(`
+        list nums is new list []
+        list vals is new list [10, 20]
+        reusable_code example(number a, number b) outputs nothing {
+          print a + b
+        }
+        example(1,2)
+      `);
+    ok(ast.succeeded());
+    const analyzed = analyze(ast);
+    generate(analyzed);
+  });
+
+  it("covers function declaration, while loop, and break usage", () => {
+    const code = `
+        reusable_code counterLoop(number limit) outputs nothing {
+          number i is 0
+          loop_while i <? limit {
+            i is i + 1
+            if i =? 2 {
+              stop_loop
+            }
+          }
+        }
+        counterLoop(3)
+      `;
+    const ast = parse(code);
+    ok(ast.succeeded());
+    const analyzed = analyze(ast);
+    generate(analyzed);
+  });
 });
 
-describe("Additional Compiler Tests", () => {
+describe("Compiler Tests", () => {
   it('compiles a single print statement to "parsed"', () => {
     const result = compile("print 1\n", "parsed");
     deepEqual(result, "Syntax is ok");
@@ -117,14 +153,14 @@ print(n)
     deepEqual(js.includes("let n_"), true);
   });
 
-    // TODO: add target names for functions
-    it('compiles function definition to "js"', () => {
-      const prog = `reusable_code greet() outputs nothing{
+  // TODO: add target names for functions
+  it('compiles function definition to "js"', () => {
+    const prog = `reusable_code greet() outputs nothing{
     print("Hello")
   }\n`;
-      const js = compile(prog, "js");
-      deepEqual(js.includes("function greet"), true);
-    });
+    const js = compile(prog, "js");
+    deepEqual(js.includes("function greet"), true);
+  });
 
   it('compiles break statement in a loop to "js"', () => {
     const prog = `
