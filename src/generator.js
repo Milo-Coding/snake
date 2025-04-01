@@ -118,7 +118,7 @@ export default function generate(program) {
       return `${gen(p.object)}.${gen(p.property)}`;
     },
     newList(l) {
-      return `[${l.elements.map(gen).join(", ")}]`;
+      return `[${l.args.map(gen).join(", ")}]`;
     },
     emptyList(l) {
       return "[]";

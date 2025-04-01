@@ -126,12 +126,14 @@ export function newList(args) {
   return {
     kind: "newList",
     args,
+    type: "list",
   };
 }
 
 export function emptyList() {
   return {
     kind: "emptyList",
+    type: "list",
   };
 }
 
