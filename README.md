@@ -9,7 +9,7 @@ Snake is a python-like language with easily readable code so even non-computer s
 
 ## Running snake code
 
-Syntax: snake < filename > < outputType >
+Syntax: node src/snake.js < filename > < outputType >
 
 Prints to stdout according to < outputType >, which must be one of:
 
