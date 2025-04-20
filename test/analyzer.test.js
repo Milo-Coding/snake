@@ -37,6 +37,26 @@ describe("Analyzer Coverage", () => {
     analyze(ast);
   });
 
+  it("covers conditionals", () => {
+    const if_ = parse(`
+        if true {
+          print 1
+        }
+      `);
+    ok(if_.succeeded());
+    analyze(if_);
+
+    const if_else = parse(`
+        if true {
+          print 1
+        } if_not {
+          print 2
+        }
+      `);
+    ok(if_else.succeeded());
+    analyze(if_else);
+  });
+
   it("analyzes valid function code", () => {
     const ast = parse(
       "reusable_code myFunc() outputs number {\noutput 42\n}\nmyFunc()\n"

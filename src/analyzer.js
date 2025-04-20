@@ -288,7 +288,7 @@ export default function analyze(match) {
       checkType(index, "number", exp);
 
       // Determine the element type from the variable's elementType property
-      const elementType = variable.elementType || "unknown";
+      const elementType = variable.elementType;
 
       return core.subscript(variable, index, elementType);
     },
