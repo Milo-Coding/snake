@@ -84,7 +84,13 @@ export default function generate(program) {
       return `${gen(a.target)} = ${gen(a.source)}`;
     },
     variableDeclaration(v) {
-      output.push(`let ${gen(v.variable)} = ${gen(v.initializer)};`);
+      if (v.initializer) {
+        output.push(`let ${gen(v.variable)} = ${gen(v.initializer)};`);
+      } else {
+        // Handle uninitialized variables
+        const defaultVal = v.variable.type === "list" ? "[]" : "null";
+        output.push(`let ${gen(v.variable)} = ${defaultVal};`);
+      }
     },
     block(b) {
       const statements = Array.isArray(b.statements)
@@ -112,16 +118,10 @@ export default function generate(program) {
       return `${e.op}(${operand})`;
     },
     subscript(s) {
-      return `${gen(s.array)}[${gen(s.index)}]`;
-    },
-    property(p) {
-      return `${gen(p.object)}.${gen(p.property)}`;
+      return `${gen(s.variable)}[${gen(s.subscript)}]`;
     },
     newList(l) {
       return `[${l.args.map(gen).join(", ")}]`;
-    },
-    emptyList(l) {
-      return "[]";
     },
     call(c) {
       return `${gen(c.callee.id)}(${c.args.map(gen).join(", ")})`;

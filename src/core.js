@@ -1,3 +1,5 @@
+import { type } from "node:os";
+
 export function program(statements) {
   return {
     kind: "program",
@@ -106,34 +108,22 @@ export function unaryExpression(op, operand, type) {
   };
 }
 
-export function subscript(variable, subscript) {
+export function subscript(variable, subscript, elementType) {
   return {
     kind: "subscript",
     variable,
     subscript,
+    type: elementType, // Return the element type
+    name: `${variable.name}[${subscript}]`,
   };
 }
 
-export function property(variable, id) {
-  return {
-    kind: "property",
-    variable,
-    id,
-  };
-}
-
-export function newList(args) {
+export function newList(args, elementType) {
   return {
     kind: "newList",
     args,
     type: "list",
-  };
-}
-
-export function emptyList() {
-  return {
-    kind: "emptyList",
-    type: "list",
+    elementType: elementType,
   };
 }
 
@@ -167,5 +157,7 @@ export function variable(name, type, mutable) {
     name,
     type,
     mutable,
+    // Add elementType property for lists, will be set later if this is a list
+    elementType: type === "list" ? null : undefined,
   };
 }

@@ -22,10 +22,8 @@ export default function analyze(match) {
       switch (statementType) {
         case "break":
           return this.findParentContextOfType("loop") !== null;
-        case "return":
+        case "output":
           return this.findParentContextOfType("function") !== null;
-        default:
-          return true;
       }
     }
     findParentContextOfType(type) {
@@ -105,20 +103,39 @@ export default function analyze(match) {
       const functionContext = context.findParentContextOfType("function");
       check(
         functionContext,
-        "Return statement must be used inside a function",
+        "Output statement must be used inside a function",
         _return
       );
-
-      const returnedValue = exp.analyze();
-      if (functionContext.returnType) {
+      // Check if there is an expression
+      if (exp.sourceString) {
+        const returnedValue = exp.analyze()[0];
+        if (functionContext.returnType) {
+          check(
+            returnedValue.type === functionContext.returnType,
+            `Expected output type ${functionContext.returnType}, but got ${returnedValue.type}`,
+            exp
+          );
+        }
         check(
-          returnedValue.type === functionContext.returnType,
-          `Expected return type ${functionContext.returnType}, but got ${returnedValue.type}`,
+          context.isValidContext("output"),
+          `Expected output type ${functionContext.returnType}, but got ${returnedValue.type}`,
           exp
         );
+        return core.returnStatement(returnedValue);
+      } else {
+        // No expression provided
+        if (
+          functionContext.returnType &&
+          functionContext.returnType !== "nothing"
+        ) {
+          throw new Error(
+            `${_return.source.getLineAndColumnMessage()} Reusable_code must output a ${
+              functionContext.returnType
+            }`
+          );
+        }
+        return core.returnStatement();
       }
-
-      return core.returnStatement(returnedValue);
     },
     Stmt_print(_print, args, _newline) {
       return core.printStatement(args.analyze());
@@ -147,10 +164,20 @@ export default function analyze(match) {
     },
     VarDec(type, id, maybeInit) {
       checkNotDeclared(id.sourceString, id);
+      // Create the variable with the declared type
       const variable = core.variable(id.sourceString, type.sourceString);
+
+      // Store the variable in the context
       context.add(id.sourceString, variable);
+
       if (maybeInit.sourceString) {
         const initializer = maybeInit.analyze()[0];
+
+        // For list types, store the element type from the initializer
+        if (type.sourceString === "list" && initializer.elementType) {
+          variable.elementType = initializer.elementType;
+        }
+
         checkSameType(variable, initializer, id);
         return core.variableDeclaration(variable, initializer);
       }
@@ -255,20 +282,35 @@ export default function analyze(match) {
     Var_subscript(id, _open, exp, _close) {
       const variable = id.analyze();
       const index = exp.analyze();
+
+      // Check that we're accessing a list
       checkType(variable, "list", id);
       checkType(index, "number", exp);
-      return core.subscript(variable, index);
-    },
-    Var_property(variable, _dot, id) {
-      const prop = id.analyze();
-      checkType(variable, "list", variable);
-      return core.property(variable, prop);
+
+      // Determine the element type from the variable's elementType property
+      const elementType = variable.elementType || "unknown";
+
+      return core.subscript(variable, index, elementType);
     },
     NewList(_new, _list, _open, args, _close) {
-      return core.newList(args.analyze());
-    },
-    EmptyList(_new, _list, _open, _close) {
-      return core.emptyList();
+      const elements = args.analyze();
+      let elementType = null;
+
+      // Determine element type from the first element if the list is not empty
+      if (elements.length > 0) {
+        elementType = elements[0].type;
+
+        // Check that all elements have the same type
+        for (let i = 1; i < elements.length; i++) {
+          check(
+            elements[i].type === elementType,
+            `List elements must have the same type. Expected ${elementType} but got ${elements[i].type}`,
+            args
+          );
+        }
+      }
+
+      return core.newList(elements, elementType);
     },
     Call(id, _open, expressions, _close) {
       const callee = id.analyze();

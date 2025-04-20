@@ -36,7 +36,6 @@ snake {
   Primary     =  Literal
               |  Var
               |  NewList
-              |  EmptyList
               |  "(" Exp ")"                -- parens
   Literal     =  null
               |  true
@@ -49,7 +48,6 @@ snake {
               |  id
 
   NewList     =  new list "[" Args "]"
-  EmptyList   =  new list "[" "]"
   Call        =  id "(" Args ")"
   Args        =  ListOf<Exp, ",">
 
@@ -63,7 +61,7 @@ snake {
   new         =  "new" ~idchar
   null        =  "no_value" ~idchar
   print       =  "print" ~idchar
-  return      =  "return" ~idchar
+  return      =  "output" ~idchar
   string      =  "text" ~idchar
   true        =  "true" ~idchar
   void        =  "nothing" ~idchar
