@@ -321,7 +321,7 @@ describe("Compiler Error Handling", () => {
 
   it("throws on invalid comparison operators", () => {
     const prog = 'if 5 == 5 { print("equal") }';
-    throws(() => compile(prog, "parsed"), /Expected/i);
+    throws(() => compile(prog, "parsed"), /Expected/);
   });
 
   it("throws on redeclaration of variable", () => {
