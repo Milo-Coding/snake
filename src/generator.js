@@ -1,6 +1,7 @@
 export default function generate(program) {
   const output = [];
 
+  // TODO: add target names for functions
   const targetName = ((mapping) => {
     return (entity) => {
       if (!mapping.has(entity)) {
@@ -81,7 +82,7 @@ export default function generate(program) {
       output.push("}");
     },
     assignment(a) {
-      return `${gen(a.target)} = ${gen(a.source)}`;
+      return `${gen(a.source)} = ${gen(a.target)}`;
     },
     variableDeclaration(v) {
       if (v.initializer) {
