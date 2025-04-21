@@ -1,5 +1,3 @@
-import { type } from "node:os";
-
 export function program(statements) {
   return {
     kind: "program",
