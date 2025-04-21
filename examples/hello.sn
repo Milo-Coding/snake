@@ -1,5 +1,2 @@
-print 2.1e2
-number dog is 21 * 2 + 8
-print dog ^ 2 =? 2500
-
-truth_value x
+text x is "hi"
+print x, "hello"
