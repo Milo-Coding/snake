@@ -9,4 +9,4 @@ reusable_code hello(text name, number times) outputs text {
 reusable_code testFunc() outputs number {
   output 1
 }
-testFunc()
+print testFunc()
