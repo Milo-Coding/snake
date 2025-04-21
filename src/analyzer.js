@@ -144,7 +144,7 @@ export default function analyze(match) {
       const test = exp.analyze();
       checkType(test, "truth_value", exp);
       const consequent = block.analyze();
-      const alternate = block2 ? block2.analyze() : null;
+      const alternate = block2.children.length ? block2.analyze() : null;
       return core.ifStatement(test, consequent, alternate);
     },
     Stmt_while(_while, exp, block, _newline) {
