@@ -1,17 +1,29 @@
 export default function generate(program) {
   const output = [];
 
-  // TODO: add target names for functions
-  const targetName = ((mapping) => {
-    return (entity) => {
-      if (!mapping.has(entity)) {
-        mapping.set(entity, mapping.size + 1);
-      }
-      return `${entity.name}_${mapping.get(entity)}`;
-    };
-  })(new Map());
+  // Create separate maps for tracking variables and functions
+  const variableMap = new Map();
+  const functionMap = new Map();
 
-  const gen = (node) => generators?.[node?.kind]?.(node) ?? node;
+  // Create a function to generate unique names based on the entity type
+  const targetName = (entity) => {
+    // Determine which map to use based on entity type
+    const map = entity.kind === "funct" ? functionMap : variableMap;
+    const key = entity.kind === "funct" ? entity.id : entity.name;
+
+    if (!map.has(key)) {
+      map.set(key, map.size + 1);
+    }
+    return `${key}_${map.get(key)}`;
+  };
+
+  const gen = (node) => {
+    // Special handling for string literals
+    if (typeof node === "string") {
+      return `"${node}"`;
+    }
+    return generators?.[node?.kind]?.(node) ?? node;
+  };
 
   const generators = {
     program(p) {
@@ -33,16 +45,13 @@ export default function generate(program) {
     functionDeclaration(d) {
       const { func, body } = d;
       output.push(
-        `function ${gen(func.id)}(${func.params.map(gen).join(", ")}) {`
+        `function ${targetName(func)}(${func.params.map(gen).join(", ")}) {`
       );
       gen(body);
       output.push("}");
     },
     variable(v) {
       return targetName(v);
-    },
-    funct(f) {
-      return targetName(f);
     },
     printStatement(s) {
       const args = Array.isArray(s.args) ? s.args : [s.args];
@@ -69,14 +78,7 @@ export default function generate(program) {
     },
     whileStatement(s) {
       output.push(`while (${gen(s.test)}) {`);
-
-      const body =
-        s.body.kind === "block"
-          ? s.body.statements
-          : Array.isArray(s.body)
-          ? s.body
-          : [s.body];
-
+      let body = s.body.statements;
       body.forEach(gen);
 
       output.push("}");
@@ -86,11 +88,11 @@ export default function generate(program) {
     },
     variableDeclaration(v) {
       if (v.initializer) {
-        output.push(`let ${gen(v.variable)} = ${gen(v.initializer)};`);
+        output.push(`let ${targetName(v.variable)} = ${gen(v.initializer)};`);
       } else {
         // Handle uninitialized variables
         const defaultVal = v.variable.type === "list" ? "[]" : "null";
-        output.push(`let ${gen(v.variable)} = ${defaultVal};`);
+        output.push(`let ${targetName(v.variable)} = ${defaultVal};`);
       }
     },
     block(b) {
@@ -125,10 +127,7 @@ export default function generate(program) {
       return `[${l.args.map(gen).join(", ")}]`;
     },
     call(c) {
-      return `${gen(c.callee.id)}(${c.args.map(gen).join(", ")})`;
-    },
-    funct(f) {
-      return `${gen(f.name)}(${f.params.map(gen).join(", ")})`;
+      return `${targetName(c.callee)}(${c.args.map(gen).join(", ")})`;
     },
     newline() {
       return "";
