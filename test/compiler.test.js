@@ -5,7 +5,7 @@ import analyze from "../src/analyzer.js";
 import generate from "../src/generator.js";
 import compile from "../src/compiler.js";
 
-describe("Full Stack Tests", () => {
+describe("Compiler Coverage", () => {
   it('compiles valid code to "parsed" output', () => {
     const result = compile("print 1\n", "parsed");
     deepEqual(result, "Syntax is ok");
@@ -66,16 +66,6 @@ describe("Compiler Tests", () => {
     deepEqual(compile(prog, "parsed"), "Syntax is ok");
   });
 
-  it("throws with invalid output type", () => {
-    let error;
-    try {
-      compile("print 1\n", "invalidType");
-    } catch (e) {
-      error = e;
-    }
-    deepEqual(!!error, true);
-  });
-
   it('compiles arithmetic expression to "analyzed"', () => {
     const prog = "number x is 5\nx is x + 3\n";
     const result = compile(prog, "analyzed");
@@ -116,17 +106,6 @@ if t {
     const result = compile(prog, "optimized");
     deepEqual(typeof result, "object");
   });
-
-  // output not yet implemented
-  //   it('compiles function usage to "optimized"', () => {
-  //     const prog = `reusable_code sum(x, y) outputs number{
-  //   x is x + y
-  //   output x
-  // }
-  // number result is sum(3,4)\n`;
-  //     const result = compile(prog, "optimized");
-  //     deepEqual(typeof result, "object");
-  //   });
 
   it('compiles while loop to "optimized"', () => {
     const prog = `
@@ -171,25 +150,6 @@ loop_while x <? 10 {
     const js = compile(prog, "js");
     deepEqual(js.includes("break;"), true);
   });
-
-  it("throws an error for unknown outputType argument", () => {
-    let error;
-    try {
-      compile("anything\n", "unknown");
-    } catch (e) {
-      error = e;
-    }
-    deepEqual(!!error, true);
-  });
-
-  // output not yet implemented
-  //     it('compiles a program with function return to "parsed"', () => {
-  //       const prog = `
-  //   reusable_code double(x) outputs number {
-  //     output x * 2
-  //   }\n`;
-  //       deepEqual(compile(prog, "parsed"), "Syntax is ok");
-  //     });
 
   it('compiles code with type mismatch to "analyzed" but might throw', () => {
     const prog = `number x is true\n`;
@@ -278,16 +238,6 @@ if ok {
     deepEqual(js.includes("if ("), true);
   });
 
-  // null property access not yet implemented
-  //   it('compiles code with a property access to "optimized"', () => {
-  //     const prog = `
-  // text greeting is "hello"
-  // print(greeting.upper)
-  // `;
-  //     const result = compile(prog, "optimized");
-  //     deepEqual(typeof result, "object");
-  //   });
-
   it('compiles code using modulus operation to "js"', () => {
     const prog = `
 number x is 10
@@ -324,5 +274,147 @@ loop_while counter <? 5 {
       error = e;
     }
     deepEqual(!!error, false);
+  });
+});
+
+describe("Compiler Error Handling", () => {
+  it("throws with invalid output type", () => {
+    let error;
+    try {
+      compile("print 1\n", "invalidType");
+    } catch (e) {
+      error = e;
+    }
+    deepEqual(!!error, true);
+  });
+
+  it("throws an error for unknown outputType argument", () => {
+    let error;
+    try {
+      compile("anything\n", "unknown");
+    } catch (e) {
+      error = e;
+    }
+    deepEqual(!!error, true);
+  });
+
+  it("throws on syntax error with missing semicolon in assignment", () => {
+    const prog = "number x is 5\nnumber y is \n";
+    let error;
+    try {
+      compile(prog, "parsed");
+    } catch (e) {
+      error = e;
+    }
+    deepEqual(!!error, true);
+  });
+
+  it("throws on undefined variable reference", () => {
+    const prog = "print(undefinedVariable)";
+    let error;
+    try {
+      compile(prog, "analyzed");
+    } catch (e) {
+      error = e;
+    }
+    deepEqual(!!error, true);
+  });
+
+  //   it("throws on function call with wrong number of arguments", () => {
+  //     const prog = `
+  //           reusable_code test(number x, number y) outputs nothing {
+  //             print(x + y)
+  //           }
+  //           test(1)
+  //         `;
+  //     let error;
+  //     try {
+  //       compile(prog, "analyzed");
+  //     } catch (e) {
+  //       error = e;
+  //     }
+  //     deepEqual(!!error, true);
+  //   });
+
+  it("throws on type mismatch in binary expression", () => {
+    const prog = `
+          text greeting is "Hello"
+          number x is 5
+          print(greeting + x)
+        `;
+    let error;
+    try {
+      compile(prog, "analyzed");
+    } catch (e) {
+      error = e;
+    }
+    deepEqual(!!error, true);
+  });
+
+  it("throws on reassignment to different type", () => {
+    const prog = `
+          number counter is 0
+          counter is "string now"
+        `;
+    let error;
+    try {
+      compile(prog, "analyzed");
+    } catch (e) {
+      error = e;
+    }
+    deepEqual(!!error, true);
+  });
+
+  it("throws on break statement outside of loop", () => {
+    const prog = "stop_loop";
+    let error;
+    try {
+      compile(prog, "analyzed");
+    } catch (e) {
+      error = e;
+    }
+    deepEqual(!!error, true);
+  });
+
+  //   it("throws on nested function declarations", () => {
+  //     const prog = `
+  //           reusable_code outer() outputs nothing {
+  //             reusable_code inner() outputs nothing {
+  //               print("nested")
+  //             }
+  //           }
+  //         `;
+  //     let error;
+  //     try {
+  //       compile(prog, "analyzed");
+  //     } catch (e) {
+  //       error = e;
+  //     }
+  //     deepEqual(!!error, true);
+  //   });
+
+  it("throws on invalid comparison operators", () => {
+    const prog = 'if 5 == 5 { print("equal") }';
+    let error;
+    try {
+      compile(prog, "parsed");
+    } catch (e) {
+      error = e;
+    }
+    deepEqual(!!error, true);
+  });
+
+  it("throws on redeclaration of variable", () => {
+    const prog = `
+          number x is 5
+          number x is 10
+        `;
+    let error;
+    try {
+      compile(prog, "analyzed");
+    } catch (e) {
+      error = e;
+    }
+    deepEqual(!!error, true);
   });
 });

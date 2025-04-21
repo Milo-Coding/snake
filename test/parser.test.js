@@ -25,8 +25,6 @@ describe("Parser Passing Tests", () => {
 
   it("parses loops", () => {
     ok(parse("loop_while x <? 10 {\nx is x + 1\n}\n").succeeded());
-    // for each not yet implemented
-    // ok(parse("loop_for_each y in my_list {\nprint y\n}\n").succeeded());
   });
 
   it("parses functions", () => {
@@ -35,12 +33,11 @@ describe("Parser Passing Tests", () => {
         'reusable_code greet() outputs nothing{\nprint "Hello"\n}\ngreet()\n'
       ).succeeded()
     );
-    // output not yet implemented
-    // ok(
-    //   parse(
-    //     "reusable_code add(number a, number b) outputs number{\noutput a + b\n}\n"
-    //   ).succeeded()
-    // );
+    ok(
+      parse(
+        "reusable_code add(number a, number b) outputs number{\noutput a + b\n}\n"
+      ).succeeded()
+    );
   });
 
   it("parses nested expressions with unary and binary operators", () => {
@@ -58,11 +55,6 @@ describe("Parser Passing Tests", () => {
   it("parses multi-element list declarations", () => {
     ok(parse("list my_list is new list [1, 2, 3]\n").succeeded());
   });
-
-  // dictionary not yet implemented
-  // it("parses name_value_pair declarations", () => {
-  //   ok(parse('name_value_pair dict is {"a": 1, "b": 2}\n').succeeded());
-  // });
 
   it("parses nested conditional blocks", () => {
     ok(
