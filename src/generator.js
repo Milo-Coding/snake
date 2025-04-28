@@ -27,8 +27,7 @@ export default function generate(program) {
 
   const generators = {
     program(p) {
-      const statements = Array.isArray(p.statements) ? p.statements : [];
-      statements.forEach(gen);
+      p.statements.forEach(gen);
     },
     assignmentStatement(s) {
       output.push(`${gen(s.assign)};`);
@@ -54,25 +53,17 @@ export default function generate(program) {
       return targetName(v);
     },
     printStatement(s) {
-      const args = Array.isArray(s.args) ? s.args : [s.args];
-      output.push(`console.log(${args.map(gen).join(", ")});`);
+      output.push(`console.log(${s.args.map(gen).join(", ")});`);
     },
     ifStatement(s) {
       output.push(`if (${gen(s.test)}) {`);
-
-      const consequent = Array.isArray(s.consequent)
-        ? s.consequent
-        : [s.consequent];
-      consequent.forEach(gen);
+      s.consequent.statements.forEach(gen);
 
       output.push("}");
 
       if (s.alternate) {
         output.push("else {");
-        const alternate = Array.isArray(s.alternate)
-          ? s.alternate
-          : [s.alternate];
-        alternate.forEach(gen);
+        s.alternate.forEach(gen);
         output.push("}");
       }
     },
@@ -96,10 +87,7 @@ export default function generate(program) {
       }
     },
     block(b) {
-      const statements = Array.isArray(b.statements)
-        ? b.statements
-        : [b.statements];
-      statements.forEach(gen);
+      b.statements.forEach(gen);
     },
     binaryExpression(e) {
       const op =
