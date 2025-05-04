@@ -112,13 +112,9 @@ const optimizers = {
     if (e.op === "||") {
       if (e.left === true) return true;
       if (e.left === false) return e.right;
-      if (e.right === true) return true;
-      if (e.right === false) return e.left;
     } else if (e.op === "&&") {
       if (e.left === false) return false;
       if (e.left === true) return e.right;
-      if (e.right === true) return e.left;
-      if (e.right === false) return false;
     }
 
     // Numeric constant folding
