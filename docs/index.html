@@ -34,7 +34,8 @@
 
         <h3>Running snake code</h3>
         <p>
-          Syntax: snake &lt; filename &gt; &lt; outputType &gt; <br />
+          Syntax: node src/snake.js &lt; filename &gt; &lt; outputType &gt;
+          <br />
           Prints to stdout according to &lt; outputType &gt;, which must be one
           of:
         </p>
@@ -56,29 +57,41 @@
         <h3>Features</h3>
         <ul>
           <li>
-            <strong>Easy to code:</strong> simple structure, clear syntax, and
-            readable keywords.
+            <strong>Easy to code:</strong> Snake has a simple structure, clear
+            syntax and very readable keywords. It is meant to be readable even
+            by someone with no expererience in computer science.
           </li>
           <li>
-            <strong>Lists:</strong> create and manage lists of data in snake.
+            <strong>Lists:</strong> In adition to the basic data types, lists of
+            data can be created and managed in snake. New lists are the only
+            data type in snake to be declared with the "new" keyword.
           </li>
           <li>
-            <strong>Dictionaries:</strong> also referred to as name_value_pairs.
+            <strong>Conditional Statements:</strong> Conditional (if/else)
+            statements are a key part of any complex program and are included in
+            an easily understandable format.
           </li>
           <li>
-            <strong>Conditional Statements:</strong> if/else in a readable
-            format.
+            <strong>Loops:</strong> Clearly defined repeatable code segments are
+            another of snake's features.
           </li>
           <li>
-            <strong>Loops:</strong> snake includes loop_for_each and loop_while.
+            <strong>Functions:</strong> Functions are another way to create
+            reusable code in snake.
           </li>
           <li>
-            <strong>Functions:</strong> defined with reusable_code and concluded
-            with output.
+            <strong>Other notable features:</strong> Snake is a statically typed
+            language. All snake files (.sn) must end with a newline: the way God
+            intended.
           </li>
+        </ul>
+
+        <h3>Semantic errors</h3>
+        <ul>
+          <li>Stop_loop (break) can only be called from a loop</li>
           <li>
-            <strong>Statically Typed:</strong> all .sn files must end with a
-            newline.
+            Output (return) can only be called from a reusable_code block
+            (function)
           </li>
         </ul>
 
@@ -117,11 +130,6 @@
               <td>list</td>
               <td>list</td>
             </tr>
-            <tr>
-              <td>dict</td>
-              <td>dict</td>
-              <td>name_value_pair</td>
-            </tr>
           </tbody>
         </table>
 
@@ -141,7 +149,7 @@
               <td>number a is 55</td>
             </tr>
             <tr>
-              <td>let b = “Hello World!”;</td>
+              <td>let b = "Hello World!";</td>
               <td>b = "Hello World!"</td>
               <td>text b is "Hello World!"</td>
             </tr>
@@ -161,7 +169,7 @@
               <td>truth_value e is false</td>
             </tr>
             <tr>
-              <td>const f = “Constant”;</td>
+              <td>const f = "Constant";</td>
               <td>f = "Constant"</td>
               <td>text f is "Constant"</td>
             </tr>
@@ -249,20 +257,12 @@
               <td>if_not</td>
             </tr>
             <tr>
-              <td>for</td>
-              <td>loop_for_each</td>
-            </tr>
-            <tr>
               <td>while</td>
               <td>loop_while</td>
             </tr>
             <tr>
               <td>break</td>
               <td>stop_loop</td>
-            </tr>
-            <tr>
-              <td>input</td>
-              <td>input</td>
             </tr>
             <tr>
               <td>void</td>
@@ -376,7 +376,7 @@
                 i is 0<br />
                 loop_while i &lt;? 3 {<br />
                 &nbsp;&nbsp;j is 0<br />
-                &nbsp;&nbsp;loop_while j &lt;? 3 {<br />
+                &nbsp;&nbsp;loop_while j &lt;? 2 {<br />
                 &nbsp;&nbsp;&nbsp;&nbsp;print(i, j)<br />
                 &nbsp;&nbsp;&nbsp;&nbsp;j is j + 1<br />
                 &nbsp;&nbsp;}<br />
