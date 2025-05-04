@@ -5,6 +5,7 @@
 Snake is a python-like language with easily readable code so even non-computer scientists can identify what code does. When thinking about the scope of language I wanted to build, I decided that I wanted my language to be capeable of all the topics covered in a 1010 programming course.
 
 #### Snake Website
+
 [Snake GitHub Pages](https://milo-coding.github.io/snake/)
 
 ## Running snake code
@@ -26,11 +27,7 @@ Snake has a simple structure, clear syntax and very readable keywords. It is mea
 
 #### Lists
 
-In adition to the basic data types, lists of data can be created and managed in snake.
-
-#### Dictionaries
-
-Like lists, snake can handle dictionaries, refered to as name_value_pairs
+In adition to the basic data types, lists of data can be created and managed in snake. New lists are the only data type in snake to be declared with the "new" keyword.
 
 #### Conditional Statements
 
@@ -50,29 +47,30 @@ Snake is a statically typed language.
 All snake files (.sn) must end with a newline: the way God intended.
 
 #### Semantic errors
-Break must be called in a loop
+
+Stop_loop (break) can only be called from a loop
+Output (return) can only be called from a reusable_code block (function)
 
 ## Types
 
-| JavaScript | Python | snake           |
-| ---------- | ------ | --------------- |
-| string     | str    | text            |
-| integer    | int    | number          |
-| float      | float  | number          |
-| boolean    | bool   | truth_value     |
-| array      | list   | list            |
-| dict       | dict   | name_value_pair |
+| JavaScript | Python | snake       |
+| ---------- | ------ | ----------- |
+| string     | str    | text        |
+| integer    | int    | number      |
+| float      | float  | number      |
+| boolean    | bool   | truth_value |
+| array      | list   | list        |
 
 ## Variable Declaration and Assignment
 
 | JavaScript              | Python             | snake                    |
 | ----------------------- | ------------------ | ------------------------ |
 | let a = 55;             | a = 55             | number a is 55           |
-| let b = “Hello World!”; | b = "Hello World!" | text b is "Hello World!" |
+| let b = "Hello World!"; | b = "Hello World!" | text b is "Hello World!" |
 | let c = 1.7;            | c = 1.7            | number c is 1.7          |
 | let d = true;           | d = True           | turth_value d is true    |
-| let e = false;          | e = False          | truth_value e is false   |
-| const f = “Constant”;   | f = "Constant"     | text f is "Constant"     |
+| let e = false;          | e = False          | truth_value d is false   |
+| const f = "Constant";   | f = "Constant"     | text f is "Constant"     |
 
 ## Variable Incrementation
 
@@ -96,10 +94,8 @@ Break must be called in a loop
 | return      | output        |
 | if          | if            |
 | else        | if_not        |
-| for         | loop_for_each |
 | while       | loop_while    |
 | break       | stop_loop     |
-| input       | input         |
 | void        | nothing       |
 
 ## Symbols
@@ -133,8 +129,8 @@ Break must be called in a loop
 | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
 | `function factorial(n) {`<br>`  if (n <= 1) return 1;`<br>`  return n * factorial(n - 1);`<br>`}` | `def factorial(n):`<br>`  if n <= 1:`<br>`    return 1`<br>`  return n * factorial(n - 1)` | `reusable_code factorial(number n) outputs number {`<br>`  if n <=? 1 {`<br>`    output 1`<br>`  }`<br>`  output n * factorial(n - 1)`<br>`}` |
 
-### Lists and Dictionaries
+### Lists
 
-| JavaScript                                                                             | Python                                                                    | snake                                                                                            |
-| -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| `let my_list = [1, 2, 3];`<br>`let dict = {a: 1, b: 2};`<br>`console.log(list, dict);` | `my_list = [1, 2, 3]`<br>`dict = {'a': 1, 'b': 2}`<br>`print(list, dict)` | `list my_list is new list [1, 2, 3]`<br>`name_value_pair dict is {"a": 1, "b": 2}`<br>`print(list, dict)` |
+| JavaScript                                               | Python                                       | snake                                                       |
+| -------------------------------------------------------- | -------------------------------------------- | ----------------------------------------------------------- |
+| `let my_list = [1, 2, 3];`<br>`console.log(my_list[1]);` | `my_list = [1, 2, 3]`<br>`print(my_list[1])` | `list my_list is new list [1, 2, 3]`<br>`print(my_list[1])` |
