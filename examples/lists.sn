@@ -1,8 +1,4 @@
 list list1 is new list []
 list list_num is new list [1, 2, 3]
 list list_str is new list ["1"]
-
-//list list_broken is new list ["1", 2]
-
-// list_num[0] is 0
 print list_num[0]
