@@ -121,7 +121,7 @@ Output (return) can only be called from a reusable_code block (function)
 
 | JavaScript                                                                                                                                       | Python                                                                                                        | snake                                                                                                                                                 |
 | ------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `let i = 0;`<br>`while (i < 3) {`<br>`  let j = 0;`<br>`  while (j < 3) {`<br>`    console.log(i, j);`<br>`    j++;`<br>`  }`<br>`  i++;`<br>`}` | `i = 0`<br>`while i < 3:`<br>`  j = 0`<br>`  while j < 3:`<br>`    print(i, j)`<br>`    j += 1`<br>`  i += 1` | `i is 0`<br>`loop_while i <? 3 {`<br>`  j is 0`<br>`  loop_while j <? 2 {`<br>`    print(i, j)`<br>`    j is j + 1`<br>`  }`<br>`  i is i + 1`<br>`}` |
+| `let i = 0;`<br>`while (i < 3) {`<br>`  let j = 0;`<br>`  while (j < 3) {`<br>`    console.log(i, j);`<br>`    j++;`<br>`  }`<br>`  i++;`<br>`}` | `i = 0`<br>`while i < 3:`<br>`  j = 0`<br>`  while j < 3:`<br>`    print(i, j)`<br>`    j += 1`<br>`  i += 1` | `i is 0`<br>`loop_while i <? 3 {`<br>`  j is 0`<br>`  loop_while j <? 3 {`<br>`    print(i, j)`<br>`    j is j + 1`<br>`  }`<br>`  i is i + 1`<br>`}` |
 
 ### Recursion
 
